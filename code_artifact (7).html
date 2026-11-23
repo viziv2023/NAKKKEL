@@ -1,0 +1,2241 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#14532D" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="خط الوسطاء للتمور" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <title>مؤسسة خط الوسطاء لتسويق التمور | نظام الفواتير والمسوقين</title>
+  <link id="pwa-icon" rel="apple-touch-icon" href="" />
+  <link id="pwa-manifest" rel="manifest" href="" />
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+  <style>
+    :root {
+      --brand-green: #14532D;
+      --brand-green-light: #166534;
+      --brand-amber: #B45309;
+      --brand-gold: #D97706;
+      --surface-bg: #FAF8F5;
+    }
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+    body {
+      font-family: system-ui, -apple-system, "Segoe UI", Tahoma, "Arabic Transparent", Arial, sans-serif;
+      background-color: var(--surface-bg);
+      color: #1C1917;
+      margin: 0;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+    .glass-card {
+      background: #FFFFFF;
+      border: 1px solid #E7E2D8;
+      box-shadow: 0 2px 10px rgba(28, 25, 23, 0.04);
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, #14532D 0%, #166534 100%);
+      color: #FFFFFF;
+      transition: transform 0.12s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+    }
+    .btn-primary:hover {
+      box-shadow: 0 6px 18px rgba(20, 83, 45, 0.22);
+    }
+    .btn-primary:active {
+      transform: scale(0.985);
+    }
+    .btn-amber {
+      background: linear-gradient(135deg, #B45309 0%, #D97706 100%);
+      color: #FFFFFF;
+      transition: transform 0.12s ease, box-shadow 0.15s ease;
+    }
+    .btn-amber:active {
+      transform: scale(0.985);
+    }
+    .input-field {
+      width: 100%;
+      background-color: #FFFFFF;
+      border: 1.5px solid #D6D3CD;
+      border-radius: 0.75rem;
+      padding: 0.75rem 0.9rem;
+      font-size: 1rem;
+      color: #1C1917;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+    .input-field:focus {
+      outline: none;
+      border-color: #14532D;
+      box-shadow: 0 0 0 3px rgba(20, 83, 45, 0.12);
+    }
+    .date-chip {
+      border: 1.5px solid #E7E2D8;
+      background: #FFFFFF;
+      color: #44403C;
+      transition: all 0.15s ease;
+      cursor: pointer;
+    }
+    .date-chip.active {
+      border-color: #14532D;
+      background: #ECFDF5;
+      color: #14532D;
+      font-weight: 700;
+    }
+    .pay-card {
+      border: 1.5px solid #E7E2D8;
+      background: #FFFFFF;
+      transition: all 0.15s ease;
+      cursor: pointer;
+    }
+    .pay-card.active {
+      border-color: #B45309;
+      background: #FFFBEB;
+      box-shadow: 0 0 0 2px rgba(217, 119, 6, 0.18);
+    }
+    .toast-enter {
+      animation: slideDown 0.25s ease-out forwards;
+    }
+    @keyframes slideDown {
+      from { opacity: 0; transform: translate(-50%, -14px); }
+      to { opacity: 1; transform: translate(-50%, 0); }
+    }
+    .manager-mobile-frame {
+      max-width: 440px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    @media print {
+      .no-print { display: none !important; }
+      body { background: #FFFFFF !important; }
+    }
+  </style>
+</head>
+<body class="pb-10">
+
+  <!-- Toast Container -->
+  <div id="toast-container" class="fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[92%] max-w-md pointer-events-none space-y-2 no-print"></div>
+
+  <!-- App Root -->
+  <div id="app"></div>
+
+  <!-- Install on Mobile Modal -->
+  <div id="install-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 p-4 no-print">
+    <div class="bg-white rounded-2xl max-w-md w-full p-5 shadow-2xl border border-stone-200 max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between mb-3">
+        <div class="flex items-center gap-2">
+          <div class="w-9 h-9 rounded-xl bg-emerald-900 text-amber-300 flex items-center justify-center">
+            <i data-lucide="smartphone" class="w-5 h-5"></i>
+          </div>
+          <h3 class="text-lg font-bold text-stone-900">تثبيت البرنامج على الجوال</h3>
+        </div>
+        <button type="button" id="close-install-modal" class="p-2 rounded-lg hover:bg-stone-100 text-stone-500">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+      <p class="text-sm text-stone-600 mb-4 leading-relaxed">
+        يمكن لأي مسوق تثبيت رابط برنامج <strong>مؤسسة خط الوسطاء لتسويق التمور</strong> كأيقونة على الشاشة الرئيسية للجوال في ثوانٍ بدون متجر تطبيقات:
+      </p>
+
+      <div id="native-install-box" class="hidden mb-4 p-3.5 rounded-xl bg-emerald-50 border border-emerald-200">
+        <p class="text-sm font-semibold text-emerald-900 mb-2">جهازك يدعم التثبيت المباشر:</p>
+        <button type="button" id="trigger-native-install" class="w-full py-2.5 px-4 rounded-xl btn-primary font-bold text-sm flex items-center justify-center gap-2">
+          <i data-lucide="download" class="w-4 h-4"></i>
+          تثبيت التطبيق الآن
+        </button>
+      </div>
+
+      <div class="space-y-3">
+        <div class="p-3.5 rounded-xl bg-stone-50 border border-stone-200">
+          <div class="font-bold text-stone-800 text-sm mb-1.5 flex items-center gap-1.5">
+            <span class="w-6 h-6 rounded-full bg-stone-800 text-white text-xs flex items-center justify-center">1</span>
+            أجهزة آيفون (Safari)
+          </div>
+          <ol class="text-xs text-stone-600 space-y-1 pr-4 list-decimal leading-relaxed">
+            <li>افتح رابط البرنامج عبر متصفح <strong>سفاري (Safari)</strong>.</li>
+            <li>اضغط على زر <strong>المشاركة</strong> <span class="inline-block px-1.5 py-0.5 bg-white border rounded text-stone-700">↑</span> أسفل الشاشة.</li>
+            <li>اختر <strong>إضافة إلى الشاشة الرئيسية (Add to Home Screen)</strong> ثم اضغط <strong>إضافة</strong>.</li>
+          </ol>
+        </div>
+
+        <div class="p-3.5 rounded-xl bg-stone-50 border border-stone-200">
+          <div class="font-bold text-stone-800 text-sm mb-1.5 flex items-center gap-1.5">
+            <span class="w-6 h-6 rounded-full bg-emerald-800 text-white text-xs flex items-center justify-center">2</span>
+            أجهزة أندرويد (Chrome)
+          </div>
+          <ol class="text-xs text-stone-600 space-y-1 pr-4 list-decimal leading-relaxed">
+            <li>افتح رابط البرنامج عبر متصفح <strong>كروم (Chrome)</strong>.</li>
+            <li>اضغط على النقاط الثلاث <strong>(⋮)</strong> أعلى المتصفح.</li>
+            <li>اختر <strong>تثبيت التطبيق</strong> أو <strong>الإضافة إلى الشاشة الرئيسية</strong>.</li>
+          </ol>
+        </div>
+      </div>
+
+      <div class="mt-4 pt-3 border-t border-stone-200 flex gap-2">
+        <button type="button" id="copy-app-link-btn" class="flex-1 py-2.5 px-3 rounded-xl bg-amber-50 text-amber-900 border border-amber-200 font-bold text-sm flex items-center justify-center gap-1.5 hover:bg-amber-100">
+          <i data-lucide="link" class="w-4 h-4"></i>
+          نسخ الرابط لإرساله للمسوقين
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sale Detail & Attachments Modal -->
+  <div id="sale-detail-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/55 p-3 sm:p-5 no-print">
+    <div class="bg-white rounded-2xl max-w-2xl w-full shadow-2xl border border-stone-200 max-h-[92vh] flex flex-col overflow-hidden">
+      <div class="flex items-center justify-between px-5 py-3.5 bg-emerald-950 text-white">
+        <div>
+          <p class="text-[11px] text-amber-300 font-semibold">مؤسسة خط الوسطاء لتسويق التمور</p>
+          <h3 id="modal-sale-title" class="text-base font-bold">تفاصيل البيعة والمرفقات</h3>
+        </div>
+        <button type="button" id="close-sale-modal" class="p-2 rounded-lg hover:bg-white/10 text-white">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+      <div id="sale-detail-body" class="p-5 overflow-y-auto space-y-4"></div>
+    </div>
+  </div>
+
+  <!-- Add Marketer Modal (for Manager) -->
+  <div id="add-marketer-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 p-4 no-print">
+    <div class="bg-white rounded-2xl max-w-md w-full p-5 shadow-2xl border border-stone-200">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-lg font-bold text-stone-900">إضافة حساب مسوق جديد</h3>
+        <button type="button" id="close-marketer-modal" class="p-2 rounded-lg hover:bg-stone-100 text-stone-500">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+      <form id="manager-add-marketer-form" class="space-y-3">
+        <div>
+          <label class="block text-sm font-semibold text-stone-700 mb-1">اسم المسوق الكامل</label>
+          <input type="text" id="mgr-m-name" class="input-field" placeholder="مثال: خالد الشمري" required />
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-sm font-semibold text-stone-700 mb-1">الرقم الوظيفي</label>
+            <input type="text" id="mgr-m-empid" class="input-field" placeholder="مثال: M-104" required />
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-stone-700 mb-1">رمز الدخول</label>
+            <input type="text" id="mgr-m-pin" class="input-field" placeholder="4 أرقام" value="1234" required />
+          </div>
+        </div>
+        <div>
+          <label class="block text-sm font-semibold text-stone-700 mb-1">رقم الجوال</label>
+          <input type="tel" id="mgr-m-phone" class="input-field" placeholder="05XXXXXXXX" required />
+        </div>
+        <div class="pt-2 flex gap-2">
+          <button type="submit" class="flex-1 py-3 rounded-xl btn-primary font-bold text-sm">حفظ وإضافة المسوق</button>
+          <button type="button" id="cancel-marketer-modal" class="px-4 py-3 rounded-xl bg-stone-100 text-stone-700 font-semibold text-sm">إلغاء</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Fullscreen Image Zoom Modal -->
+  <div id="zoom-modal" class="fixed inset-0 z-[60] hidden items-center justify-center bg-black/85 p-4 no-print">
+    <button type="button" id="close-zoom-modal" class="absolute top-4 left-4 p-2.5 rounded-full bg-white/15 text-white hover:bg-white/25">
+      <i data-lucide="x" class="w-6 h-6"></i>
+    </button>
+    <div class="max-w-3xl w-full flex flex-col items-center gap-3">
+      <p id="zoom-caption" class="text-white text-sm font-semibold"></p>
+      <img id="zoom-img" src="" alt="معاينة المرفق" class="max-h-[80vh] max-w-full rounded-xl shadow-2xl border border-white/20 bg-white" />
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      'use strict';
+
+      const COMPANY_NAME = 'مؤسسة خط الوسطاء لتسويق التمور';
+      const STORAGE_KEY = 'khat_alwusataa_dates_v2';
+      const MANAGER_PIN = '1234';
+      const DATE_TYPES = ['سكري مفتل', 'سكري رطب', 'خلاص', 'صقعي', 'برحي', 'عجوة', 'مجدول', 'نبوت سيف', 'أخرى'];
+
+      // Generate brand SVG icon for PWA manifest and Apple Touch Icon
+      const BRAND_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+        <rect width="128" height="128" rx="28" fill="#14532D"/>
+        <circle cx="64" cy="64" r="46" fill="#166534" stroke="#F59E0B" stroke-width="3"/>
+        <path d="M64 34c-11 0-20 8-22 18 8-3 15-3 22 2 7-5 14-5 22-2-2-10-11-18-22-18z" fill="#FBBF24"/>
+        <path d="M64 46v44" stroke="#FEF3C7" stroke-width="6" stroke-linecap="round"/>
+        <ellipse cx="52" cy="70" rx="8" ry="12" transform="rotate(-18 52 70)" fill="#D97706"/>
+        <ellipse cx="76" cy="70" rx="8" ry="12" transform="rotate(18 76 70)" fill="#D97706"/>
+        <ellipse cx="64" cy="78" rx="8" ry="12" fill="#F59E0B"/>
+      </svg>`;
+
+      function setupPWA() {
+        try {
+          const iconDataUrl = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(BRAND_SVG);
+          const iconEl = document.getElementById('pwa-icon');
+          if (iconEl) iconEl.href = iconDataUrl;
+
+          const manifestObj = {
+            name: COMPANY_NAME,
+            short_name: 'خط الوسطاء',
+            description: 'نظام تسجيل فواتير وإيصالات مسوقي التمور ولوحة تحكم المدير',
+            start_url: '.',
+            display: 'standalone',
+            background_color: '#FAF8F5',
+            theme_color: '#14532D',
+            dir: 'rtl',
+            lang: 'ar',
+            icons: [
+              { src: iconDataUrl, sizes: '192x192', type: 'image/svg+xml', purpose: 'any maskable' },
+              { src: iconDataUrl, sizes: '512x512', type: 'image/svg+xml', purpose: 'any maskable' }
+            ]
+          };
+          const blob = new Blob([JSON.stringify(manifestObj)], { type: 'application/manifest+json' });
+          const manifestUrl = URL.createObjectURL(blob);
+          const manifestEl = document.getElementById('pwa-manifest');
+          if (manifestEl) manifestEl.href = manifestUrl;
+        } catch (e) {
+          // Safe fallback if blob URLs are restricted
+        }
+      }
+
+      // Helper to create an empty item row for the invoice form
+      let itemSeq = 1;
+      function createEmptyItem(defaultType = 'سكري مفتل') {
+        return {
+          uid: 'item_' + (itemSeq++) + '_' + Date.now(),
+          dateType: defaultType,
+          customDateType: '',
+          cartons: '',
+          unitPrice: ''
+        };
+      }
+
+      // Normalize any sale (supports both multi-item and legacy single-item records)
+      function getSaleItems(sale) {
+        if (sale && Array.isArray(sale.items) && sale.items.length > 0) {
+          return sale.items;
+        }
+        return [{
+          dateType: sale.dateType || 'غير محدد',
+          cartons: Number(sale.cartons) || 0,
+          unitPrice: Number(sale.unitPrice) || 0,
+          lineTotal: Number(sale.total) || 0
+        }];
+      }
+
+      function getSaleTotalCartons(sale) {
+        return getSaleItems(sale).reduce((sum, it) => sum + (Number(it.cartons) || 0), 0);
+      }
+
+      // Create realistic sample attachment SVG images so demo records have working previews
+      function makeSampleDocSvg(title, subtitle, amountText, codeText, accentColor) {
+        const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="460" height="320" viewBox="0 0 460 320">
+          <rect width="460" height="320" rx="14" fill="#FFFDF9" stroke="#D6D3CD" stroke-width="3"/>
+          <rect width="460" height="62" rx="14" fill="${accentColor}"/>
+          <text x="230" y="38" text-anchor="middle" fill="#FFFFFF" font-family="Tahoma, Arial" font-size="18" font-weight="bold">${title}</text>
+          <text x="430" y="96" text-anchor="end" fill="#44403C" font-family="Tahoma, Arial" font-size="15" font-weight="bold">${COMPANY_NAME}</text>
+          <text x="430" y="124" text-anchor="end" fill="#78716C" font-family="Tahoma, Arial" font-size="13">${subtitle}</text>
+          <line x1="30" y1="146" x2="430" y2="146" stroke="#E7E2D8" stroke-width="2" stroke-dasharray="6 4"/>
+          <rect x="30" y="166" width="400" height="64" rx="10" fill="#F5F5F4"/>
+          <text x="230" y="196" text-anchor="middle" fill="#14532D" font-family="Tahoma, Arial" font-size="22" font-weight="bold">${amountText}</text>
+          <text x="230" y="219" text-anchor="middle" fill="#57534E" font-family="Tahoma, Arial" font-size="13">${codeText}</text>
+          <text x="230" y="282" text-anchor="middle" fill="#A8A29E" font-family="Tahoma, Arial" font-size="12">نموذج مرفق تجريبي للمعاينة</text>
+        </svg>`;
+        return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+      }
+
+      function getDefaultData() {
+        const now = Date.now();
+        const hour = 3600 * 1000;
+        return {
+          marketers: [
+            { id: 'mk_1', name: 'فهد العتيبي', empId: 'M-101', phone: '0551234567', pin: '1234', active: true },
+            { id: 'mk_2', name: 'سعد الحربي', empId: 'M-102', phone: '0507654321', pin: '1234', active: true },
+            { id: 'mk_3', name: 'عبدالله الدوسري', empId: 'M-103', phone: '0569876543', pin: '1234', active: true }
+          ],
+          sales: [
+            {
+              id: 'INV-1004',
+              marketerId: 'mk_1',
+              marketerName: 'فهد العتيبي',
+              marketerEmpId: 'M-101',
+              farmName: 'مزرعة الراجحي للتمور - بريدة',
+              farmNumber: '0554411220',
+              items: [
+                { dateType: 'سكري مفتل', cartons: 45, unitPrice: 65, lineTotal: 2925 },
+                { dateType: 'خلاص', cartons: 20, unitPrice: 50, lineTotal: 1000 }
+              ],
+              cartons: 65,
+              total: 3925,
+              paymentMethod: 'network',
+              posReceiptNumber: 'POS-884120',
+              transferRef: '',
+              merchantName: '',
+              notes: 'درجة أولى كرتون 3 كيلو (صنفين في فاتورة واحدة)',
+              paymentReceiptImg: makeSampleDocSvg('إيصال دفع شبكة (مدى)', 'عملية مقبولة - مزرعة الراجحي', '3,925.00 ريال', 'رقم الإيصال: POS-884120', '#0F766E'),
+              manualInvoiceImg: makeSampleDocSvg('فاتورة مبيعات يدوية', '45 سكري مفتل + 20 خلاص', 'مجموع الفاتورة: 3,925 ريال', 'المسوق: فهد العتيبي (M-101)', '#14532D'),
+              createdAt: new Date(now - 1 * hour).toISOString(),
+              reviewed: false
+            },
+            {
+              id: 'INV-1003',
+              marketerId: 'mk_2',
+              marketerName: 'سعد الحربي',
+              marketerEmpId: 'M-102',
+              farmName: 'مزرعة النخيل الذهبي - عنيزة',
+              farmNumber: '0503399881',
+              items: [
+                { dateType: 'خلاص', cartons: 50, unitPrice: 48, lineTotal: 2400 },
+                { dateType: 'صقعي', cartons: 25, unitPrice: 70, lineTotal: 1750 },
+                { dateType: 'برحي', cartons: 30, unitPrice: 35, lineTotal: 1050 }
+              ],
+              cartons: 105,
+              total: 5200,
+              paymentMethod: 'deferred',
+              posReceiptNumber: '',
+              transferRef: '',
+              merchantName: 'أسواق التاجر أبو سلمان للتمور',
+              notes: 'السداد خلال 15 يوم حسب الاتفاق',
+              paymentReceiptImg: makeSampleDocSvg('سند استلام (دفع آجل)', 'التاجر: أسواق التاجر أبو سلمان', '5,200.00 ريال', 'تاريخ الاستحقاق: بعد 15 يوم', '#B45309'),
+              manualInvoiceImg: makeSampleDocSvg('فاتورة مبيعات يدوية', '3 أصناف (خلاص + صقعي + برحي)', 'مجموع الفاتورة: 5,200 ريال', 'المسوق: سعد الحربي (M-102)', '#14532D'),
+              createdAt: new Date(now - 3.5 * hour).toISOString(),
+              reviewed: true
+            },
+            {
+              id: 'INV-1002',
+              marketerId: 'mk_3',
+              marketerName: 'عبدالله الدوسري',
+              marketerEmpId: 'M-103',
+              farmName: 'مزرعة السبيعي - البكيرية',
+              farmNumber: '0562200114',
+              items: [
+                { dateType: 'صقعي', cartons: 30, unitPrice: 72, lineTotal: 2160 }
+              ],
+              cartons: 30,
+              total: 2160,
+              paymentMethod: 'transfer',
+              posReceiptNumber: '',
+              transferRef: 'مصرف الراجحي - 992014',
+              merchantName: '',
+              notes: 'حوالة فورية على حساب المؤسسة',
+              paymentReceiptImg: makeSampleDocSvg('إيصال حوالة بنكية', 'مصرف الراجحي - حساب المؤسسة', '2,160.00 ريال', 'رقم المرجع: 992014', '#1D4ED8'),
+              manualInvoiceImg: makeSampleDocSvg('فاتورة مبيعات يدوية', '30 كرتون صقعي × 72 ريال', 'مجموع الفاتورة: 2,160 ريال', 'المسوق: عبدالله الدوسري (M-103)', '#14532D'),
+              createdAt: new Date(now - 6 * hour).toISOString(),
+              reviewed: true
+            },
+            {
+              id: 'INV-1001',
+              marketerId: 'mk_1',
+              marketerName: 'فهد العتيبي',
+              marketerEmpId: 'M-101',
+              farmName: 'مزرعة الفهد - الرس',
+              farmNumber: '0548877661',
+              items: [
+                { dateType: 'برحي', cartons: 60, unitPrice: 35, lineTotal: 2100 },
+                { dateType: 'سكري رطب', cartons: 15, unitPrice: 55, lineTotal: 825 }
+              ],
+              cartons: 75,
+              total: 2925,
+              paymentMethod: 'cash',
+              posReceiptNumber: '',
+              transferRef: '',
+              merchantName: '',
+              notes: 'استلام نقدي مباشر في السوق',
+              paymentReceiptImg: makeSampleDocSvg('سند قبض نقدي (كاش)', 'مزرعة الفهد - الرس', '2,925.00 ريال', 'تم التسليم نقداً للمسوق', '#15803D'),
+              manualInvoiceImg: makeSampleDocSvg('فاتورة مبيعات يدوية', '60 برحي + 15 سكري رطب', 'مجموع الفاتورة: 2,925 ريال', 'المسوق: فهد العتيبي (M-101)', '#14532D'),
+              createdAt: new Date(now - 26 * hour).toISOString(),
+              reviewed: true
+            }
+          ]
+        };
+      }
+
+      function loadDB() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          if (raw) {
+            const parsed = JSON.parse(raw);
+            if (parsed && Array.isArray(parsed.marketers) && Array.isArray(parsed.sales)) {
+              return parsed;
+            }
+          }
+        } catch (e) {}
+        return getDefaultData();
+      }
+
+      function saveDB(data) {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        } catch (e) {
+          showToast('مساحة التخزين ممتلئة، حاول استخدام صور أصغر حجماً.', 'error');
+        }
+        try {
+          if (channel) channel.postMessage({ type: 'DB_UPDATED' });
+        } catch (e) {}
+      }
+
+      let channel = null;
+      try {
+        if (typeof BroadcastChannel !== 'undefined') {
+          channel = new BroadcastChannel('khat_alwusataa_sync');
+          channel.onmessage = function (ev) {
+            if (ev.data && ev.data.type === 'DB_UPDATED') {
+              state.db = loadDB();
+              render();
+              if (state.user && state.user.role === 'manager') {
+                showToast('وصلت عملية بيع جديدة من أحد المسوقين الآن!', 'success');
+              }
+            }
+          };
+        }
+      } catch (e) {}
+
+      function createFreshForm() {
+        return {
+          farmName: '',
+          farmNumber: '',
+          items: [createEmptyItem('سكري مفتل')],
+          paymentMethod: 'cash', // 'cash' | 'network' | 'transfer' | 'deferred'
+          posReceiptNumber: '',
+          transferRef: '',
+          merchantName: '',
+          notes: '',
+          paymentReceiptImg: '',
+          manualInvoiceImg: ''
+        };
+      }
+
+      // Application State
+      const state = {
+        db: loadDB(),
+        user: null, // { role: 'marketer', id, name, empId, phone } | { role: 'manager', name }
+        authTab: 'marketer', // 'marketer' | 'register' | 'manager'
+        marketerTab: 'new-sale', // 'new-sale' | 'my-sales'
+        managerTab: 'sales', // 'sales' | 'marketers'
+        managerViewMode: 'auto', // 'auto' | 'mobile' | 'desktop'
+        filters: {
+          search: '',
+          marketerId: 'all',
+          paymentMethod: 'all',
+          dateRange: 'all' // 'all' | 'today' | 'week'
+        },
+        form: createFreshForm(),
+        deferredPrompt: null
+      };
+
+      window.addEventListener('beforeinstallprompt', function (e) {
+        e.preventDefault();
+        state.deferredPrompt = e;
+        const box = document.getElementById('native-install-box');
+        if (box) box.classList.remove('hidden');
+      });
+
+      // Utility Formatters
+      function escapeHtml(str) {
+        if (str === null || str === undefined) return '';
+        return String(str)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#39;');
+      }
+
+      function formatCurrency(val) {
+        const num = Number(val);
+        if (!isFinite(num)) return '0.00';
+        return num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      }
+
+      function formatNumber(val) {
+        const num = Number(val);
+        if (!isFinite(num)) return '0';
+        return num.toLocaleString('en-US');
+      }
+
+      function formatDateTime(iso) {
+        try {
+          const d = new Date(iso);
+          const dateStr = d.toLocaleDateString('ar-SA-u-nu-latn', { year: 'numeric', month: '2-digit', day: '2-digit' });
+          const timeStr = d.toLocaleTimeString('ar-SA-u-nu-latn', { hour: '2-digit', minute: '2-digit', hour12: true });
+          return `${dateStr} • ${timeStr}`;
+        } catch (e) {
+          return iso || '';
+        }
+      }
+
+      function getPaymentLabel(method) {
+        const map = {
+          cash: 'كاش (نقدي)',
+          network: 'شبكة (مدى)',
+          transfer: 'حوالة بنكية',
+          deferred: 'دفع آجل'
+        };
+        return map[method] || method;
+      }
+
+      function getPaymentBadgeClass(method) {
+        const map = {
+          cash: 'bg-emerald-100 text-emerald-900 border-emerald-200',
+          network: 'bg-teal-100 text-teal-900 border-teal-200',
+          transfer: 'bg-blue-100 text-blue-900 border-blue-200',
+          deferred: 'bg-amber-100 text-amber-900 border-amber-200'
+        };
+        return map[method] || 'bg-stone-100 text-stone-800 border-stone-200';
+      }
+
+      function getPaymentDetailText(sale) {
+        if (sale.paymentMethod === 'network') return sale.posReceiptNumber ? `إيصال: ${sale.posReceiptNumber}` : 'بدون رقم إيصال';
+        if (sale.paymentMethod === 'deferred') return sale.merchantName ? `التاجر: ${sale.merchantName}` : 'بدون اسم تاجر';
+        if (sale.paymentMethod === 'transfer') return sale.transferRef ? `مرجع: ${sale.transferRef}` : 'حوالة بنكية';
+        return 'نقدي مباشر';
+      }
+
+      function showToast(msg, type = 'success') {
+        const container = document.getElementById('toast-container');
+        if (!container) return;
+        const el = document.createElement('div');
+        const styles = type === 'error'
+          ? 'bg-red-700 text-white border-red-800'
+          : type === 'info'
+          ? 'bg-stone-900 text-white border-stone-700'
+          : 'bg-emerald-900 text-white border-emerald-700';
+        el.className = `toast-enter pointer-events-auto px-4 py-3 rounded-xl shadow-xl border text-sm font-bold flex items-center justify-between gap-2 ${styles}`;
+        el.innerHTML = `<span>${escapeHtml(msg)}</span>`;
+        container.appendChild(el);
+        setTimeout(() => {
+          el.style.opacity = '0';
+          el.style.transition = 'opacity 0.25s ease';
+          setTimeout(() => el.remove(), 260);
+        }, 3200);
+      }
+
+      // Compress uploaded image via canvas so localStorage stays fast and light
+      function compressImageFile(file, callback) {
+        if (!file || !file.type.startsWith('image/')) {
+          showToast('يرجى اختيار ملف صورة صالح (JPG / PNG).', 'error');
+          return;
+        }
+        const reader = new FileReader();
+        reader.onload = function (ev) {
+          const img = new Image();
+          img.onload = function () {
+            const maxDim = 960;
+            let w = img.width;
+            let h = img.height;
+            if (w > maxDim || h > maxDim) {
+              if (w > h) {
+                h = Math.round((h * maxDim) / w);
+                w = maxDim;
+              } else {
+                w = Math.round((w * maxDim) / h);
+                h = maxDim;
+              }
+            }
+            const canvas = document.createElement('canvas');
+            canvas.width = w;
+            canvas.height = h;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, w, h);
+            const dataUrl = canvas.toDataURL('image/jpeg', 0.72);
+            callback(dataUrl);
+          };
+          img.onerror = function () {
+            callback(ev.target.result);
+          };
+          img.src = ev.target.result;
+        };
+        reader.readAsDataURL(file);
+      }
+
+      function copyToClipboard(text) {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(text).then(() => {
+            showToast('تم نسخ رابط البرنامج بنجاح، يمكنك إرساله للمسوقين عبر واتساب.');
+          }).catch(() => fallbackCopy(text));
+        } else {
+          fallbackCopy(text);
+        }
+      }
+
+      function fallbackCopy(text) {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        try {
+          document.execCommand('copy');
+          showToast('تم نسخ رابط البرنامج بنجاح، يمكنك إرساله للمسوقين.');
+        } catch (e) {
+          showToast('تعذر النسخ التلقائي، يمكنك نسخ الرابط من شريط المتصفح.', 'info');
+        }
+        ta.remove();
+      }
+
+      function getFilteredSales() {
+        const { search, marketerId, paymentMethod, dateRange } = state.filters;
+        const q = search.trim().toLowerCase();
+        const now = new Date();
+        const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+        const startOfWeek = startOfToday - 6 * 24 * 3600 * 1000;
+
+        return state.db.sales.filter(s => {
+          if (marketerId !== 'all' && s.marketerId !== marketerId) return false;
+          if (paymentMethod !== 'all' && s.paymentMethod !== paymentMethod) return false;
+          if (dateRange === 'today') {
+            if (new Date(s.createdAt).getTime() < startOfToday) return false;
+          } else if (dateRange === 'week') {
+            if (new Date(s.createdAt).getTime() < startOfWeek) return false;
+          }
+          if (q) {
+            const itemTypes = getSaleItems(s).map(it => it.dateType).join(' ');
+            const hay = [
+              s.id, s.farmName, s.farmNumber, itemTypes, s.marketerName,
+              s.marketerEmpId, s.posReceiptNumber, s.merchantName, s.transferRef, s.notes
+            ].join(' ').toLowerCase();
+            if (!hay.includes(q)) return false;
+          }
+          return true;
+        });
+      }
+
+      function formatItemsCompactHtml(sale) {
+        const items = getSaleItems(sale);
+        return items.map(it => `
+          <div class="flex items-center justify-between gap-2 text-xs py-0.5">
+            <span><strong class="text-stone-900">${escapeHtml(it.dateType)}</strong> (${formatNumber(it.cartons)} × ${formatCurrency(it.unitPrice)})</span>
+            <span class="font-bold text-emerald-900 whitespace-nowrap">${formatCurrency(it.lineTotal)} ر.س</span>
+          </div>
+        `).join('');
+      }
+
+      function exportCSV(sales) {
+        const headers = [
+          'رقم الفاتورة', 'تاريخ ووقت الإرسال', 'اسم المسوق', 'الرقم الوظيفي',
+          'اسم المزرعة', 'رقم المزرعة', 'عدد الأصناف', 'تفاصيل الأصناف (النوع × العدد × السعر = الإجمالي)',
+          'إجمالي الكراتين', 'مجموع الفاتورة (ريال)', 'طريقة الدفع',
+          'تفاصيل الدفع', 'الملاحظات', 'حالة المراجعة'
+        ];
+        const rows = sales.map(s => {
+          const items = getSaleItems(s);
+          const itemsSummary = items.map(it => `${it.dateType}: ${it.cartons} كرتون × ${it.unitPrice} ر.س = ${it.lineTotal} ر.س`).join(' | ');
+          return [
+            s.id,
+            formatDateTime(s.createdAt),
+            s.marketerName,
+            s.marketerEmpId,
+            s.farmName,
+            s.farmNumber,
+            items.length,
+            itemsSummary,
+            getSaleTotalCartons(s),
+            s.total,
+            getPaymentLabel(s.paymentMethod),
+            getPaymentDetailText(s),
+            s.notes || '',
+            s.reviewed ? 'تمت المراجعة' : 'جديدة'
+          ];
+        });
+        const csvLines = [headers, ...rows].map(row =>
+          row.map(cell => '"' + String(cell).replace(/"/g, '""') + '"').join(',')
+        );
+        const csvContent = '\uFEFF' + csvLines.join('\n');
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `مبيعات-خط-الوسطاء-${new Date().toISOString().slice(0, 10)}.csv`;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+        showToast('تم تصدير ملف المبيعات بصيغة إكسل (CSV) بنجاح.');
+      }
+
+      // Modal Helpers
+      function openInstallModal() {
+        const m = document.getElementById('install-modal');
+        if (!m) return;
+        m.classList.remove('hidden');
+        m.classList.add('flex');
+        if (window.lucide) lucide.createIcons();
+      }
+
+      function closeInstallModal() {
+        const m = document.getElementById('install-modal');
+        if (!m) return;
+        m.classList.add('hidden');
+        m.classList.remove('flex');
+      }
+
+      function openAddMarketerModal() {
+        const m = document.getElementById('add-marketer-modal');
+        if (!m) return;
+        m.classList.remove('hidden');
+        m.classList.add('flex');
+        if (window.lucide) lucide.createIcons();
+      }
+
+      function closeAddMarketerModal() {
+        const m = document.getElementById('add-marketer-modal');
+        if (!m) return;
+        m.classList.add('hidden');
+        m.classList.remove('flex');
+      }
+
+      function openZoomModal(src, caption) {
+        const m = document.getElementById('zoom-modal');
+        const img = document.getElementById('zoom-img');
+        const cap = document.getElementById('zoom-caption');
+        if (!m || !img) return;
+        img.src = src;
+        if (cap) cap.textContent = caption || '';
+        m.classList.remove('hidden');
+        m.classList.add('flex');
+        if (window.lucide) lucide.createIcons();
+      }
+
+      function closeZoomModal() {
+        const m = document.getElementById('zoom-modal');
+        if (!m) return;
+        m.classList.add('hidden');
+        m.classList.remove('flex');
+      }
+
+      function openSaleDetailModal(saleId) {
+        const sale = state.db.sales.find(s => s.id === saleId);
+        if (!sale) return;
+        const modal = document.getElementById('sale-detail-modal');
+        const title = document.getElementById('modal-sale-title');
+        const body = document.getElementById('sale-detail-body');
+        if (!modal || !body) return;
+
+        title.textContent = `تفاصيل الفاتورة #${sale.id}`;
+        const items = getSaleItems(sale);
+        const totalCartons = getSaleTotalCartons(sale);
+        const isManager = state.user && state.user.role === 'manager';
+
+        body.innerHTML = `
+          <div class="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-stone-200">
+            <div class="flex items-center gap-2.5">
+              <div class="w-10 h-10 rounded-full bg-emerald-100 text-emerald-900 font-bold flex items-center justify-center">
+                ${escapeHtml(sale.marketerName.slice(0, 1))}
+              </div>
+              <div>
+                <div class="font-bold text-stone-900 text-sm">${escapeHtml(sale.marketerName)}</div>
+                <div class="text-xs text-stone-500">الرقم الوظيفي: <strong class="text-stone-800">${escapeHtml(sale.marketerEmpId)}</strong></div>
+              </div>
+            </div>
+            <div class="text-left">
+              <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold ${sale.reviewed ? 'bg-emerald-100 text-emerald-900' : 'bg-amber-100 text-amber-900'}">
+                ${sale.reviewed ? 'تمت المراجعة والاعتماد' : 'جديدة - بانتظار المراجعة'}
+              </span>
+              <div class="text-[11px] text-stone-500 mt-1">${escapeHtml(formatDateTime(sale.createdAt))}</div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div class="p-3.5 rounded-xl bg-stone-50 border border-stone-200">
+              <p class="text-xs font-bold text-stone-500 mb-1.5">بيانات المزرعة</p>
+              <div class="text-sm font-bold text-stone-900">${escapeHtml(sale.farmName)}</div>
+              <div class="text-xs text-stone-600 mt-1">رقم المزرعة: <span dir="ltr" class="font-semibold">${escapeHtml(sale.farmNumber)}</span></div>
+            </div>
+            <div class="p-3.5 rounded-xl bg-stone-50 border border-stone-200">
+              <p class="text-xs font-bold text-stone-500 mb-1.5">بيانات الدفع</p>
+              <span class="inline-block px-2.5 py-0.5 rounded-full text-xs font-bold border ${getPaymentBadgeClass(sale.paymentMethod)}">
+                ${escapeHtml(getPaymentLabel(sale.paymentMethod))}
+              </span>
+              <div class="text-xs text-stone-700 font-semibold mt-1.5">${escapeHtml(getPaymentDetailText(sale))}</div>
+            </div>
+          </div>
+
+          <div class="p-4 rounded-xl bg-emerald-50/70 border border-emerald-200">
+            <div class="flex items-center justify-between mb-2.5">
+              <p class="text-xs font-bold text-emerald-900">أصناف الفاتورة (${items.length} ${items.length === 1 ? 'صنف' : 'أصناف'})</p>
+              <span class="text-xs font-semibold text-emerald-800">إجمالي الكراتين: ${formatNumber(totalCartons)}</span>
+            </div>
+            <div class="overflow-x-auto bg-white rounded-xl border border-emerald-100">
+              <table class="w-full text-right text-xs sm:text-sm border-collapse">
+                <thead>
+                  <tr class="bg-emerald-100/70 text-emerald-950 font-bold border-b border-emerald-200">
+                    <th class="py-2.5 px-3">#</th>
+                    <th class="py-2.5 px-3">نوع التمر</th>
+                    <th class="py-2.5 px-3 text-center">الكراتين</th>
+                    <th class="py-2.5 px-3 text-center">السعر الإفرادي</th>
+                    <th class="py-2.5 px-3 text-left">الإجمالي</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-stone-100">
+                  ${items.map((it, idx) => `
+                    <tr>
+                      <td class="py-2.5 px-3 text-stone-500 font-semibold">${idx + 1}</td>
+                      <td class="py-2.5 px-3 font-bold text-stone-900">${escapeHtml(it.dateType)}</td>
+                      <td class="py-2.5 px-3 text-center font-semibold text-stone-800">${formatNumber(it.cartons)}</td>
+                      <td class="py-2.5 px-3 text-center text-stone-700">${formatCurrency(it.unitPrice)} ر.س</td>
+                      <td class="py-2.5 px-3 text-left font-extrabold text-emerald-900 whitespace-nowrap">${formatCurrency(it.lineTotal)} ر.س</td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+                <tfoot>
+                  <tr class="bg-emerald-900 text-white font-extrabold">
+                    <td colspan="2" class="py-3 px-3">مجموع الفاتورة النهائي</td>
+                    <td class="py-3 px-3 text-center">${formatNumber(totalCartons)} كرتون</td>
+                    <td class="py-3 px-3"></td>
+                    <td class="py-3 px-3 text-left text-amber-300 whitespace-nowrap">${formatCurrency(sale.total)} ر.س</td>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+            ${sale.notes ? `<div class="mt-3 text-xs text-stone-700 bg-white/80 p-2.5 rounded-lg border border-emerald-100"><strong>ملاحظات:</strong> ${escapeHtml(sale.notes)}</div>` : ''}
+          </div>
+
+          <div>
+            <p class="text-sm font-bold text-stone-800 mb-2.5">المرفقات (اضغط على الصورة للتكبير)</p>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div class="border border-stone-200 rounded-xl p-2.5 bg-stone-50">
+                <div class="text-xs font-bold text-stone-700 mb-2 flex items-center justify-between">
+                  <span>إيصال الدفع</span>
+                  ${sale.paymentReceiptImg ? '<span class="text-emerald-700">مرفق ✓</span>' : '<span class="text-stone-400">غير مرفق</span>'}
+                </div>
+                ${sale.paymentReceiptImg
+                  ? `<img src="${sale.paymentReceiptImg}" alt="إيصال الدفع" data-zoom-src="payment" class="w-full h-44 object-contain bg-white rounded-lg border border-stone-200 cursor-zoom-in" />`
+                  : `<div class="h-32 rounded-lg border border-dashed border-stone-300 flex items-center justify-center text-xs text-stone-400">لم يتم إرفاق صورة</div>`}
+              </div>
+              <div class="border border-stone-200 rounded-xl p-2.5 bg-stone-50">
+                <div class="text-xs font-bold text-stone-700 mb-2 flex items-center justify-between">
+                  <span>الفاتورة اليدوية</span>
+                  ${sale.manualInvoiceImg ? '<span class="text-emerald-700">مرفق ✓</span>' : '<span class="text-stone-400">غير مرفق</span>'}
+                </div>
+                ${sale.manualInvoiceImg
+                  ? `<img src="${sale.manualInvoiceImg}" alt="الفاتورة اليدوية" data-zoom-src="invoice" class="w-full h-44 object-contain bg-white rounded-lg border border-stone-200 cursor-zoom-in" />`
+                  : `<div class="h-32 rounded-lg border border-dashed border-stone-300 flex items-center justify-center text-xs text-stone-400">لم يتم إرفاق صورة</div>`}
+              </div>
+            </div>
+          </div>
+
+          <div class="flex flex-wrap gap-2 pt-3 border-t border-stone-200">
+            ${isManager ? `
+              <button type="button" id="toggle-review-sale-btn" data-sale-id="${escapeHtml(sale.id)}" class="flex-1 py-2.5 px-4 rounded-xl ${sale.reviewed ? 'bg-stone-100 text-stone-800 hover:bg-stone-200' : 'btn-primary'} font-bold text-sm flex items-center justify-center gap-1.5">
+                <i data-lucide="${sale.reviewed ? 'rotate-ccw' : 'check-circle-2'}" class="w-4 h-4"></i>
+                ${sale.reviewed ? 'إلغاء حالة المراجعة' : 'اعتماد وتأكيد المراجعة'}
+              </button>
+            ` : ''}
+            <button type="button" id="print-single-sale-btn" class="px-4 py-2.5 rounded-xl bg-amber-50 text-amber-900 border border-amber-200 font-bold text-sm flex items-center justify-center gap-1.5 hover:bg-amber-100">
+              <i data-lucide="printer" class="w-4 h-4"></i>
+              طباعة الفاتورة
+            </button>
+          </div>
+        `;
+
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        if (window.lucide) lucide.createIcons();
+
+        body.querySelectorAll('img[data-zoom-src]').forEach(imgEl => {
+          imgEl.addEventListener('click', () => {
+            const kind = imgEl.getAttribute('data-zoom-src');
+            openZoomModal(imgEl.src, kind === 'payment' ? `إيصال الدفع — #${sale.id}` : `الفاتورة اليدوية — #${sale.id}`);
+          });
+        });
+
+        const toggleBtn = document.getElementById('toggle-review-sale-btn');
+        if (toggleBtn) {
+          toggleBtn.addEventListener('click', () => {
+            sale.reviewed = !sale.reviewed;
+            saveDB(state.db);
+            showToast(sale.reviewed ? 'تم اعتماد ومراجعة الفاتورة بنجاح.' : 'تمت إعادة الفاتورة إلى قائمة الانتظار.', 'info');
+            openSaleDetailModal(sale.id);
+            render();
+          });
+        }
+
+        const printBtn = document.getElementById('print-single-sale-btn');
+        if (printBtn) {
+          printBtn.addEventListener('click', () => window.print());
+        }
+      }
+
+      function closeSaleDetailModal() {
+        const modal = document.getElementById('sale-detail-modal');
+        if (!modal) return;
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+      }
+
+      // ============================================
+      // VIEWS
+      // ============================================
+
+      function renderAuthView() {
+        const marketers = state.db.marketers.filter(m => m.active);
+        return `
+          <div class="min-h-screen flex flex-col justify-center items-center px-4 py-8">
+            <div class="w-full max-w-md">
+              <!-- Brand Card -->
+              <div class="text-center mb-6">
+                <div class="w-16 h-16 mx-auto mb-3 rounded-2xl shadow-lg overflow-hidden border-2 border-amber-500/40">
+                  ${BRAND_SVG}
+                </div>
+                <h1 class="text-xl sm:text-2xl font-extrabold text-emerald-950">${COMPANY_NAME}</h1>
+                <p class="text-sm text-stone-600 mt-1">نظام تسجيل فواتير وإيصالات المسوقين الفوري</p>
+              </div>
+
+              <!-- Auth Panel -->
+              <div class="glass-card rounded-2xl p-5 sm:p-6">
+                <!-- Role Tabs -->
+                <div class="grid grid-cols-3 gap-1.5 bg-stone-100 p-1 rounded-xl mb-5">
+                  <button type="button" data-auth-tab="marketer" class="py-2.5 px-2 rounded-lg text-xs sm:text-sm font-bold transition ${state.authTab === 'marketer' ? 'bg-white text-emerald-900 shadow-sm' : 'text-stone-600 hover:text-stone-900'}">
+                    دخول مسوق
+                  </button>
+                  <button type="button" data-auth-tab="register" class="py-2.5 px-2 rounded-lg text-xs sm:text-sm font-bold transition ${state.authTab === 'register' ? 'bg-white text-emerald-900 shadow-sm' : 'text-stone-600 hover:text-stone-900'}">
+                    حساب جديد
+                  </button>
+                  <button type="button" data-auth-tab="manager" class="py-2.5 px-2 rounded-lg text-xs sm:text-sm font-bold transition ${state.authTab === 'manager' ? 'bg-white text-amber-800 shadow-sm' : 'text-stone-600 hover:text-stone-900'}">
+                    دخول المدير
+                  </button>
+                </div>
+
+                ${state.authTab === 'marketer' ? `
+                  <form id="marketer-login-form" class="space-y-4">
+                    <div>
+                      <label class="block text-sm font-bold text-stone-700 mb-1.5">الرقم الوظيفي للمسوق</label>
+                      <input type="text" id="login-empid" class="input-field" placeholder="مثال: M-101" value="M-101" required />
+                    </div>
+                    <div>
+                      <label class="block text-sm font-bold text-stone-700 mb-1.5">رمز الدخول</label>
+                      <input type="password" id="login-pin" class="input-field" placeholder="••••" value="1234" required />
+                    </div>
+                    <button type="submit" class="w-full py-3.5 rounded-xl btn-primary font-bold text-base flex items-center justify-center gap-2">
+                      <i data-lucide="log-in" class="w-5 h-5"></i>
+                      دخول لحساب المسوق
+                    </button>
+
+                    ${marketers.length ? `
+                      <div class="pt-3 border-t border-stone-200">
+                        <p class="text-xs font-semibold text-stone-500 mb-2">دخول سريع لحساب مسوق (للتجربة):</p>
+                        <div class="flex flex-wrap gap-1.5">
+                          ${marketers.map(m => `
+                            <button type="button" data-quick-marketer="${escapeHtml(m.id)}" class="px-3 py-1.5 rounded-lg bg-emerald-50 text-emerald-900 border border-emerald-200 text-xs font-bold hover:bg-emerald-100">
+                              ${escapeHtml(m.name)} (${escapeHtml(m.empId)})
+                            </button>
+                          `).join('')}
+                        </div>
+                      </div>
+                    ` : ''}
+                  </form>
+                ` : state.authTab === 'register' ? `
+                  <form id="marketer-register-form" class="space-y-3.5">
+                    <div>
+                      <label class="block text-sm font-bold text-stone-700 mb-1">الاسم الكامل للمسوق</label>
+                      <input type="text" id="reg-name" class="input-field" placeholder="اكتب اسمك الثلاثي" required />
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                      <div>
+                        <label class="block text-sm font-bold text-stone-700 mb-1">الرقم الوظيفي</label>
+                        <input type="text" id="reg-empid" class="input-field" placeholder="مثال: M-105" required />
+                      </div>
+                      <div>
+                        <label class="block text-sm font-bold text-stone-700 mb-1">رمز الدخول</label>
+                        <input type="password" id="reg-pin" class="input-field" placeholder="4 أرقام" required />
+                      </div>
+                    </div>
+                    <div>
+                      <label class="block text-sm font-bold text-stone-700 mb-1">رقم الجوال</label>
+                      <input type="tel" id="reg-phone" class="input-field" placeholder="05XXXXXXXX" required />
+                    </div>
+                    <button type="submit" class="w-full py-3.5 rounded-xl btn-primary font-bold text-base flex items-center justify-center gap-2">
+                      <i data-lucide="user-plus" class="w-5 h-5"></i>
+                      فتح حساب مسوق والبدء فوراً
+                    </button>
+                  </form>
+                ` : `
+                  <form id="manager-login-form" class="space-y-4">
+                    <div class="p-3 rounded-xl bg-amber-50 border border-amber-200 text-xs text-amber-900 leading-relaxed">
+                      <strong>الحساب الرئيسي للمدير:</strong> متابعة فورية لجميع فواتير وإيصالات المسوقين مع إمكانية العرض بوضع الجوال أو اللابتوب.
+                    </div>
+                    <div>
+                      <label class="block text-sm font-bold text-stone-700 mb-1.5">رمز دخول المدير</label>
+                      <input type="password" id="manager-pin" class="input-field" placeholder="أدخل رمز المدير" value="1234" required />
+                      <p class="text-[11px] text-stone-500 mt-1">الرمز الافتراضي للتجربة: <strong class="text-stone-800">1234</strong></p>
+                    </div>
+                    <button type="submit" class="w-full py-3.5 rounded-xl btn-amber font-bold text-base flex items-center justify-center gap-2">
+                      <i data-lucide="shield-check" class="w-5 h-5"></i>
+                      الدخول إلى لوحة تحكم المدير
+                    </button>
+                  </form>
+                `}
+              </div>
+
+              <!-- Install on Mobile Button -->
+              <div class="mt-4 flex flex-col sm:flex-row gap-2">
+                <button type="button" id="open-install-btn" class="flex-1 py-3 px-4 rounded-xl bg-white border border-stone-300 text-stone-800 font-bold text-sm flex items-center justify-center gap-2 hover:bg-stone-50 shadow-sm">
+                  <i data-lucide="smartphone" class="w-4 h-4 text-emerald-800"></i>
+                  تثبيت البرنامج على شاشة الجوال
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      function computeFormTotals() {
+        let totalCartons = 0;
+        let grandTotal = 0;
+        state.form.items.forEach(it => {
+          const c = Number(it.cartons) || 0;
+          const p = Number(it.unitPrice) || 0;
+          totalCartons += c;
+          grandTotal += c * p;
+        });
+        return { totalCartons, grandTotal };
+      }
+
+      function renderMarketerView() {
+        const u = state.user;
+        const mySales = state.db.sales.filter(s => s.marketerId === u.id);
+        const myTotal = mySales.reduce((acc, s) => acc + (Number(s.total) || 0), 0);
+        const myCartons = mySales.reduce((acc, s) => acc + getSaleTotalCartons(s), 0);
+        const { totalCartons: formTotalCartons, grandTotal: formGrandTotal } = computeFormTotals();
+
+        return `
+          <!-- Sticky Mobile Header -->
+          <header class="sticky top-0 z-30 bg-emerald-950 text-white shadow-md no-print">
+            <div class="max-w-xl mx-auto px-4 py-3 flex items-center justify-between gap-2">
+              <div class="flex items-center gap-2.5 min-w-0">
+                <div class="w-10 h-10 rounded-xl overflow-hidden shrink-0 border border-amber-400/40">
+                  ${BRAND_SVG}
+                </div>
+                <div class="min-w-0">
+                  <div class="text-[11px] text-amber-300 font-semibold truncate">${COMPANY_NAME}</div>
+                  <div class="text-sm font-bold truncate">${escapeHtml(u.name)} <span class="text-emerald-300 font-normal">(${escapeHtml(u.empId)})</span></div>
+                </div>
+              </div>
+              <div class="flex items-center gap-1.5 shrink-0">
+                <button type="button" id="open-install-btn" title="تثبيت على الجوال" class="p-2 rounded-lg bg-white/10 hover:bg-white/20 text-amber-300">
+                  <i data-lucide="smartphone" class="w-4 h-4"></i>
+                </button>
+                <button type="button" id="switch-to-manager-btn" title="معاينة لوحة المدير" class="px-2.5 py-1.5 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 text-amber-200 text-xs font-bold">
+                  المدير
+                </button>
+                <button type="button" id="logout-btn" title="تسجيل الخروج" class="p-2 rounded-lg bg-white/10 hover:bg-red-500/40 text-white">
+                  <i data-lucide="log-out" class="w-4 h-4"></i>
+                </button>
+              </div>
+            </div>
+
+            <!-- Tabs -->
+            <div class="max-w-xl mx-auto px-4 pb-2.5 grid grid-cols-2 gap-2">
+              <button type="button" data-mk-tab="new-sale" class="py-2.5 rounded-xl text-sm font-bold flex items-center justify-center gap-1.5 transition ${state.marketerTab === 'new-sale' ? 'bg-white text-emerald-950 shadow' : 'bg-white/10 text-emerald-100 hover:bg-white/15'}">
+                <i data-lucide="plus-circle" class="w-4 h-4"></i>
+                تسجيل فاتورة جديدة
+              </button>
+              <button type="button" data-mk-tab="my-sales" class="py-2.5 rounded-xl text-sm font-bold flex items-center justify-center gap-1.5 transition ${state.marketerTab === 'my-sales' ? 'bg-white text-emerald-950 shadow' : 'bg-white/10 text-emerald-100 hover:bg-white/15'}">
+                <i data-lucide="receipt" class="w-4 h-4"></i>
+                بيعاتي (${mySales.length})
+              </button>
+            </div>
+          </header>
+
+          <main class="max-w-xl mx-auto px-3.5 sm:px-4 pt-4">
+            ${state.marketerTab === 'new-sale' ? `
+              <form id="sale-submit-form" class="space-y-4">
+                <!-- Section 1: Farm Info -->
+                <section class="glass-card rounded-2xl p-4 space-y-3">
+                  <div class="flex items-center gap-2 text-emerald-900 font-extrabold text-sm">
+                    <span class="w-6 h-6 rounded-lg bg-emerald-100 text-emerald-900 flex items-center justify-center text-xs">1</span>
+                    بيانات المزرعة
+                  </div>
+                  <div>
+                    <label class="block text-sm font-bold text-stone-700 mb-1">اسم المزرعة *</label>
+                    <input type="text" id="f-farm-name" class="input-field" placeholder="مثال: مزرعة الراجحي - بريدة" value="${escapeHtml(state.form.farmName)}" required />
+                  </div>
+                  <div>
+                    <label class="block text-sm font-bold text-stone-700 mb-1">رقم المزرعة / الجوال *</label>
+                    <input type="tel" id="f-farm-number" class="input-field" placeholder="مثال: 055XXXXXXX" value="${escapeHtml(state.form.farmNumber)}" required />
+                  </div>
+                </section>
+
+                <!-- Section 2: Multi-Item Goods Info -->
+                <section class="glass-card rounded-2xl p-4 space-y-3.5">
+                  <div class="flex items-center justify-between gap-2">
+                    <div class="flex items-center gap-2 text-emerald-900 font-extrabold text-sm">
+                      <span class="w-6 h-6 rounded-lg bg-emerald-100 text-emerald-900 flex items-center justify-center text-xs">2</span>
+                      أصناف البضاعة في الفاتورة
+                    </div>
+                    <span class="px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-900 text-xs font-bold">
+                      ${state.form.items.length} ${state.form.items.length === 1 ? 'صنف' : 'أصناف'}
+                    </span>
+                  </div>
+
+                  <div class="space-y-3">
+                    ${state.form.items.map((item, idx) => {
+                      const c = Number(item.cartons) || 0;
+                      const p = Number(item.unitPrice) || 0;
+                      const lineTotal = c * p;
+                      return `
+                        <div class="p-3.5 rounded-xl bg-stone-50 border border-stone-200 space-y-3">
+                          <div class="flex items-center justify-between gap-2 pb-2 border-b border-stone-200/80">
+                            <span class="text-xs font-extrabold text-emerald-950 bg-emerald-100 px-2.5 py-1 rounded-lg">
+                              الصنف رقم ${idx + 1}
+                            </span>
+                            ${state.form.items.length > 1 ? `
+                              <button type="button" data-remove-item="${escapeHtml(item.uid)}" class="text-xs font-bold text-red-600 hover:text-red-700 flex items-center gap-1 px-2 py-1 rounded-lg hover:bg-red-50">
+                                <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                                حذف الصنف
+                              </button>
+                            ` : ''}
+                          </div>
+
+                          <div>
+                            <label class="block text-xs font-bold text-stone-700 mb-1.5">نوع التمر *</label>
+                            <div class="flex flex-wrap gap-1.5">
+                              ${DATE_TYPES.map(dt => `
+                                <button type="button" data-item-uid="${escapeHtml(item.uid)}" data-item-date-type="${escapeHtml(dt)}" class="date-chip px-2.5 py-1.5 rounded-lg text-xs ${item.dateType === dt ? 'active' : ''}">
+                                  ${escapeHtml(dt)}
+                                </button>
+                              `).join('')}
+                            </div>
+                            ${item.dateType === 'أخرى' ? `
+                              <input type="text" data-item-uid="${escapeHtml(item.uid)}" data-item-field="customDateType" class="input-field mt-2 py-2 text-sm" placeholder="اكتب نوع التمر هنا..." value="${escapeHtml(item.customDateType)}" required />
+                            ` : ''}
+                          </div>
+
+                          <div class="grid grid-cols-2 gap-2.5">
+                            <div>
+                              <label class="block text-xs font-bold text-stone-700 mb-1">عدد الكراتين *</label>
+                              <input type="number" min="1" step="1" inputmode="numeric" data-item-uid="${escapeHtml(item.uid)}" data-item-field="cartons" class="input-field py-2 text-center font-bold text-base" placeholder="0" value="${escapeHtml(item.cartons)}" required />
+                            </div>
+                            <div>
+                              <label class="block text-xs font-bold text-stone-700 mb-1">السعر الإفرادي للكرتون *</label>
+                              <input type="number" min="0.5" step="0.5" inputmode="decimal" data-item-uid="${escapeHtml(item.uid)}" data-item-field="unitPrice" class="input-field py-2 text-center font-bold text-base" placeholder="0.00" value="${escapeHtml(item.unitPrice)}" required />
+                            </div>
+                          </div>
+
+                          <div class="flex items-center justify-between bg-white px-3 py-2 rounded-lg border border-stone-200">
+                            <span class="text-xs font-semibold text-stone-600">إجمالي هذا الصنف (تلقائي):</span>
+                            <span data-item-total-display="${escapeHtml(item.uid)}" class="text-sm font-extrabold text-emerald-900">${formatCurrency(lineTotal)} ريال</span>
+                          </div>
+                        </div>
+                      `;
+                    }).join('')}
+                  </div>
+
+                  <!-- Add Another Variety Button -->
+                  <button type="button" id="add-item-btn" class="w-full py-3 px-4 rounded-xl border-2 border-dashed border-emerald-700/50 bg-emerald-50/60 hover:bg-emerald-100/70 text-emerald-950 font-extrabold text-sm flex items-center justify-center gap-2 transition">
+                    <i data-lucide="plus-circle" class="w-4 h-4 text-emerald-800"></i>
+                    إضافة صنف تمر آخر لنفس الفاتورة
+                  </button>
+
+                  <!-- Automatic Invoice Grand Total Box -->
+                  <div class="p-4 rounded-xl bg-emerald-900 text-white flex items-center justify-between gap-2">
+                    <div>
+                      <div class="text-xs text-emerald-200 font-bold">مجموع الفاتورة الإجمالي (تلقائي)</div>
+                      <div id="live-invoice-summary" class="text-[11px] text-emerald-300 mt-0.5">
+                        ${state.form.items.length} ${state.form.items.length === 1 ? 'صنف' : 'أصناف'} • إجمالي الكراتين: ${formatNumber(formTotalCartons)} كرتون
+                      </div>
+                    </div>
+                    <div class="text-left">
+                      <span id="live-invoice-total" class="text-2xl font-extrabold text-amber-300">${formatCurrency(formGrandTotal)}</span>
+                      <span class="text-xs text-emerald-100 mr-1">ريال</span>
+                    </div>
+                  </div>
+                </section>
+
+                <!-- Section 3: Payment Info -->
+                <section class="glass-card rounded-2xl p-4 space-y-3.5">
+                  <div class="flex items-center gap-2 text-emerald-900 font-extrabold text-sm">
+                    <span class="w-6 h-6 rounded-lg bg-emerald-100 text-emerald-900 flex items-center justify-center text-xs">3</span>
+                    بيانات الدفع
+                  </div>
+
+                  <div class="grid grid-cols-2 gap-2.5">
+                    ${[
+                      { id: 'cash', label: 'كاش (نقدي)', icon: 'banknote' },
+                      { id: 'network', label: 'شبكة (مدى)', icon: 'credit-card' },
+                      { id: 'transfer', label: 'حوالة بنكية', icon: 'landmark' },
+                      { id: 'deferred', label: 'دفع آجل', icon: 'clock' }
+                    ].map(pm => `
+                      <button type="button" data-pay-method="${pm.id}" class="pay-card p-3 rounded-xl flex items-center gap-2.5 text-right ${state.form.paymentMethod === pm.id ? 'active' : ''}">
+                        <div class="w-9 h-9 rounded-lg ${state.form.paymentMethod === pm.id ? 'bg-amber-600 text-white' : 'bg-stone-100 text-stone-600'} flex items-center justify-center shrink-0">
+                          <i data-lucide="${pm.icon}" class="w-5 h-5"></i>
+                        </div>
+                        <span class="text-sm font-bold text-stone-800">${pm.label}</span>
+                      </button>
+                    `).join('')}
+                  </div>
+
+                  ${state.form.paymentMethod === 'network' ? `
+                    <div class="p-3 rounded-xl bg-teal-50 border border-teal-200">
+                      <label class="block text-sm font-bold text-teal-950 mb-1">رقم إيصال الشبكة *</label>
+                      <input type="text" id="f-pos-receipt" class="input-field" placeholder="أدخل رقم الإيصال الظاهر على جهاز مدى" value="${escapeHtml(state.form.posReceiptNumber)}" required />
+                    </div>
+                  ` : ''}
+
+                  ${state.form.paymentMethod === 'transfer' ? `
+                    <div class="p-3 rounded-xl bg-blue-50 border border-blue-200">
+                      <label class="block text-sm font-bold text-blue-950 mb-1">اسم البنك / رقم مرجع الحوالة</label>
+                      <input type="text" id="f-transfer-ref" class="input-field" placeholder="مثال: الراجحي - 992014" value="${escapeHtml(state.form.transferRef)}" />
+                    </div>
+                  ` : ''}
+
+                  ${state.form.paymentMethod === 'deferred' ? `
+                    <div class="p-3 rounded-xl bg-amber-50 border border-amber-200">
+                      <label class="block text-sm font-bold text-amber-950 mb-1">اسم التاجر (للدفع الآجل) *</label>
+                      <input type="text" id="f-merchant-name" class="input-field" placeholder="اكتب اسم التاجر أو المؤسسة" value="${escapeHtml(state.form.merchantName)}" required />
+                    </div>
+                  ` : ''}
+
+                  <div>
+                    <label class="block text-sm font-bold text-stone-700 mb-1">ملاحظات إضافية (اختياري)</label>
+                    <input type="text" id="f-notes" class="input-field" placeholder="مثال: درجة أولى، موعد السداد..." value="${escapeHtml(state.form.notes)}" />
+                  </div>
+                </section>
+
+                <!-- Section 4: Attachments -->
+                <section class="glass-card rounded-2xl p-4 space-y-3.5">
+                  <div class="flex items-center gap-2 text-emerald-900 font-extrabold text-sm">
+                    <span class="w-6 h-6 rounded-lg bg-emerald-100 text-emerald-900 flex items-center justify-center text-xs">4</span>
+                    المرفقات (تصوير مباشر أو من الألبوم)
+                  </div>
+
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <!-- Payment Receipt Upload -->
+                    <div class="p-3 rounded-xl border-2 border-dashed ${state.form.paymentReceiptImg ? 'border-emerald-500 bg-emerald-50/40' : 'border-stone-300 bg-stone-50'}">
+                      <div class="text-sm font-bold text-stone-800 mb-2 flex items-center justify-between">
+                        <span>إيصال الدفع</span>
+                        ${state.form.paymentReceiptImg ? `<button type="button" data-clear-img="paymentReceiptImg" class="text-xs text-red-600 font-bold">حذف</button>` : ''}
+                      </div>
+                      ${state.form.paymentReceiptImg ? `
+                        <img src="${state.form.paymentReceiptImg}" alt="معاينة إيصال الدفع" class="w-full h-32 object-contain bg-white rounded-lg border border-stone-200 mb-2" />
+                      ` : ''}
+                      <label class="w-full py-2.5 px-3 rounded-xl bg-white border border-stone-300 text-stone-800 font-bold text-xs flex items-center justify-center gap-1.5 cursor-pointer hover:bg-stone-100">
+                        <i data-lucide="camera" class="w-4 h-4 text-emerald-800"></i>
+                        ${state.form.paymentReceiptImg ? 'تغيير صورة الإيصال' : 'تصوير / إرفاق إيصال الدفع'}
+                        <input type="file" id="upload-payment-receipt" accept="image/*" capture="environment" class="hidden" />
+                      </label>
+                    </div>
+
+                    <!-- Manual Invoice Upload -->
+                    <div class="p-3 rounded-xl border-2 border-dashed ${state.form.manualInvoiceImg ? 'border-emerald-500 bg-emerald-50/40' : 'border-stone-300 bg-stone-50'}">
+                      <div class="text-sm font-bold text-stone-800 mb-2 flex items-center justify-between">
+                        <span>الفاتورة اليدوية</span>
+                        ${state.form.manualInvoiceImg ? `<button type="button" data-clear-img="manualInvoiceImg" class="text-xs text-red-600 font-bold">حذف</button>` : ''}
+                      </div>
+                      ${state.form.manualInvoiceImg ? `
+                        <img src="${state.form.manualInvoiceImg}" alt="معاينة الفاتورة اليدوية" class="w-full h-32 object-contain bg-white rounded-lg border border-stone-200 mb-2" />
+                      ` : ''}
+                      <label class="w-full py-2.5 px-3 rounded-xl bg-white border border-stone-300 text-stone-800 font-bold text-xs flex items-center justify-center gap-1.5 cursor-pointer hover:bg-stone-100">
+                        <i data-lucide="file-image" class="w-4 h-4 text-amber-700"></i>
+                        ${state.form.manualInvoiceImg ? 'تغيير صورة الفاتورة' : 'تصوير / إرفاق الفاتورة اليدوية'}
+                        <input type="file" id="upload-manual-invoice" accept="image/*" capture="environment" class="hidden" />
+                      </label>
+                    </div>
+                  </div>
+                </section>
+
+                <!-- Submit Button -->
+                <button type="submit" class="w-full py-4 rounded-2xl btn-primary font-extrabold text-base shadow-lg flex items-center justify-center gap-2">
+                  <i data-lucide="send" class="w-5 h-5"></i>
+                  رفع الفاتورة وإرسالها للمدير فوراً
+                </button>
+              </form>
+            ` : `
+              <!-- My Submitted Sales -->
+              <div class="space-y-3">
+                <div class="grid grid-cols-2 gap-3">
+                  <div class="glass-card rounded-2xl p-3.5">
+                    <div class="text-xs text-stone-500 font-semibold">إجمالي مبيعاتي</div>
+                    <div class="text-lg font-extrabold text-emerald-900 mt-1">${formatCurrency(myTotal)} <span class="text-xs font-normal">ر.س</span></div>
+                  </div>
+                  <div class="glass-card rounded-2xl p-3.5">
+                    <div class="text-xs text-stone-500 font-semibold">إجمالي الكراتين</div>
+                    <div class="text-lg font-extrabold text-amber-700 mt-1">${formatNumber(myCartons)} <span class="text-xs font-normal">كرتون</span></div>
+                  </div>
+                </div>
+
+                ${mySales.length === 0 ? `
+                  <div class="glass-card rounded-2xl p-8 text-center text-stone-500">
+                    <p class="font-bold text-stone-700">لا توجد فواتير مسجلة بعد</p>
+                    <p class="text-xs mt-1">ابدأ بتسجيل أول فاتورة من تبويب "تسجيل فاتورة جديدة".</p>
+                  </div>
+                ` : mySales.map(s => `
+                  <div class="glass-card rounded-2xl p-4 space-y-2.5">
+                    <div class="flex items-start justify-between gap-2">
+                      <div>
+                        <div class="font-extrabold text-stone-900 text-sm">${escapeHtml(s.farmName)}</div>
+                        <div class="text-xs text-stone-500 mt-0.5">${escapeHtml(formatDateTime(s.createdAt))}</div>
+                      </div>
+                      <span class="px-2.5 py-1 rounded-full text-[11px] font-bold ${s.reviewed ? 'bg-emerald-100 text-emerald-900' : 'bg-amber-100 text-amber-900'}">
+                        ${s.reviewed ? 'تمت المراجعة ✓' : 'وصلت للمدير'}
+                      </span>
+                    </div>
+                    <div class="bg-stone-50 rounded-xl p-2.5 border border-stone-100 space-y-1">
+                      ${formatItemsCompactHtml(s)}
+                      <div class="flex items-center justify-between pt-1.5 mt-1 border-t border-stone-200/80 text-xs">
+                        <span class="font-bold text-stone-600">مجموع الفاتورة (${formatNumber(getSaleTotalCartons(s))} كرتون)</span>
+                        <span class="text-sm font-extrabold text-emerald-950">${formatCurrency(s.total)} ر.س</span>
+                      </div>
+                    </div>
+                    <div class="flex items-center justify-between gap-2 pt-1">
+                      <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold border ${getPaymentBadgeClass(s.paymentMethod)}">
+                        ${escapeHtml(getPaymentLabel(s.paymentMethod))}
+                      </span>
+                      <button type="button" data-open-sale="${escapeHtml(s.id)}" class="text-xs font-bold text-emerald-800 hover:underline flex items-center gap-1">
+                        عرض الفاتورة والمرفقات
+                        <i data-lucide="chevron-left" class="w-4 h-4"></i>
+                      </button>
+                    </div>
+                  </div>
+                `).join('')}
+              </div>
+            `}
+          </main>
+        `;
+      }
+
+      function renderManagerView() {
+        const filtered = getFilteredSales();
+        const totalRevenue = filtered.reduce((acc, s) => acc + (Number(s.total) || 0), 0);
+        const totalCartons = filtered.reduce((acc, s) => acc + getSaleTotalCartons(s), 0);
+        const pendingCount = filtered.filter(s => !s.reviewed).length;
+
+        const payTotals = { cash: 0, network: 0, transfer: 0, deferred: 0 };
+        filtered.forEach(s => {
+          if (payTotals[s.paymentMethod] !== undefined) payTotals[s.paymentMethod] += Number(s.total) || 0;
+        });
+
+        const isForcedMobile = state.managerViewMode === 'mobile';
+        const isForcedDesktop = state.managerViewMode === 'desktop';
+        const containerClass = isForcedMobile ? 'manager-mobile-frame px-3' : 'max-w-7xl mx-auto px-3.5 sm:px-6';
+
+        return `
+          <!-- Manager Header -->
+          <header class="sticky top-0 z-30 bg-emerald-950 text-white shadow-md no-print">
+            <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
+              <div class="flex items-center gap-3 min-w-0">
+                <div class="w-10 h-10 rounded-xl overflow-hidden shrink-0 border border-amber-400/50">
+                  ${BRAND_SVG}
+                </div>
+                <div class="min-w-0">
+                  <div class="text-xs text-amber-300 font-bold truncate">${COMPANY_NAME}</div>
+                  <div class="text-sm sm:text-base font-extrabold flex items-center gap-2">
+                    لوحة تحكم المدير
+                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-800 text-[10px] text-emerald-200 font-semibold">
+                      <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                      مباشر
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="flex flex-wrap items-center gap-2">
+                <!-- Mobile / Laptop View Switcher -->
+                <div class="flex items-center bg-white/10 rounded-xl p-1 text-xs font-bold">
+                  <button type="button" data-view-mode="mobile" class="px-2.5 py-1.5 rounded-lg flex items-center gap-1 transition ${state.managerViewMode === 'mobile' ? 'bg-amber-500 text-stone-950' : 'text-emerald-100 hover:bg-white/10'}">
+                    <i data-lucide="smartphone" class="w-3.5 h-3.5"></i>
+                    جوال
+                  </button>
+                  <button type="button" data-view-mode="auto" class="px-2.5 py-1.5 rounded-lg transition ${state.managerViewMode === 'auto' ? 'bg-white text-emerald-950' : 'text-emerald-100 hover:bg-white/10'}">
+                    تلقائي
+                  </button>
+                  <button type="button" data-view-mode="desktop" class="px-2.5 py-1.5 rounded-lg flex items-center gap-1 transition ${state.managerViewMode === 'desktop' ? 'bg-amber-500 text-stone-950' : 'text-emerald-100 hover:bg-white/10'}">
+                    <i data-lucide="laptop" class="w-3.5 h-3.5"></i>
+                    لابتوب
+                  </button>
+                </div>
+
+                <button type="button" id="open-install-btn" class="px-2.5 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-amber-300 text-xs font-bold flex items-center gap-1">
+                  <i data-lucide="share-2" class="w-3.5 h-3.5"></i>
+                  رابط المسوقين
+                </button>
+                <button type="button" id="logout-btn" class="px-2.5 py-1.5 rounded-xl bg-white/10 hover:bg-red-500/40 text-white text-xs font-bold flex items-center gap-1">
+                  <i data-lucide="log-out" class="w-3.5 h-3.5"></i>
+                  خروج
+                </button>
+              </div>
+            </div>
+
+            <!-- Manager Navigation Tabs -->
+            <div class="max-w-7xl mx-auto px-4 pb-2.5 flex items-center gap-2">
+              <button type="button" data-mgr-tab="sales" class="px-4 py-2 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-1.5 transition ${state.managerTab === 'sales' ? 'bg-white text-emerald-950 shadow' : 'bg-white/10 text-emerald-100 hover:bg-white/15'}">
+                <i data-lucide="file-spreadsheet" class="w-4 h-4"></i>
+                الفواتير والعمليات (${state.db.sales.length})
+              </button>
+              <button type="button" data-mgr-tab="marketers" class="px-4 py-2 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-1.5 transition ${state.managerTab === 'marketers' ? 'bg-white text-emerald-950 shadow' : 'bg-white/10 text-emerald-100 hover:bg-white/15'}">
+                <i data-lucide="users" class="w-4 h-4"></i>
+                حسابات المسوقين (${state.db.marketers.length})
+              </button>
+            </div>
+          </header>
+
+          <main class="${containerClass} pt-5 space-y-5">
+            ${state.managerTab === 'sales' ? `
+              <!-- KPI Cards -->
+              <section class="grid ${isForcedMobile ? 'grid-cols-2' : 'grid-cols-2 lg:grid-cols-4'} gap-3">
+                <div class="glass-card rounded-2xl p-4">
+                  <div class="text-xs font-bold text-stone-500">إجمالي المبيعات</div>
+                  <div class="text-xl sm:text-2xl font-extrabold text-emerald-900 mt-1">${formatCurrency(totalRevenue)} <span class="text-xs font-semibold">ر.س</span></div>
+                  <div class="text-[11px] text-stone-500 mt-1">ضمن الفلتر الحالي</div>
+                </div>
+                <div class="glass-card rounded-2xl p-4">
+                  <div class="text-xs font-bold text-stone-500">إجمالي الكراتين</div>
+                  <div class="text-xl sm:text-2xl font-extrabold text-amber-700 mt-1">${formatNumber(totalCartons)} <span class="text-xs font-semibold">كرتون</span></div>
+                  <div class="text-[11px] text-stone-500 mt-1">عدد الفواتير: ${filtered.length}</div>
+                </div>
+                <div class="glass-card rounded-2xl p-4">
+                  <div class="text-xs font-bold text-stone-500">كاش + شبكة + حوالة</div>
+                  <div class="text-lg sm:text-xl font-extrabold text-teal-800 mt-1">${formatCurrency(payTotals.cash + payTotals.network + payTotals.transfer)} <span class="text-xs font-semibold">ر.س</span></div>
+                  <div class="text-[11px] text-stone-500 mt-1">مبالغ محصلة</div>
+                </div>
+                <div class="glass-card rounded-2xl p-4">
+                  <div class="text-xs font-bold text-stone-500">الدفع الآجل</div>
+                  <div class="text-lg sm:text-xl font-extrabold text-amber-800 mt-1">${formatCurrency(payTotals.deferred)} <span class="text-xs font-semibold">ر.س</span></div>
+                  <div class="text-[11px] text-stone-500 mt-1">بانتظار المراجعة: ${pendingCount}</div>
+                </div>
+              </section>
+
+              <!-- Payment Breakdown Strip -->
+              <section class="glass-card rounded-2xl p-3.5 flex flex-wrap items-center justify-between gap-3 text-xs">
+                <div class="flex flex-wrap items-center gap-2">
+                  <span class="px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-900 font-bold">كاش: ${formatCurrency(payTotals.cash)} ر.س</span>
+                  <span class="px-2.5 py-1 rounded-lg bg-teal-50 text-teal-900 font-bold">شبكة: ${formatCurrency(payTotals.network)} ر.س</span>
+                  <span class="px-2.5 py-1 rounded-lg bg-blue-50 text-blue-900 font-bold">حوالة: ${formatCurrency(payTotals.transfer)} ر.س</span>
+                  <span class="px-2.5 py-1 rounded-lg bg-amber-50 text-amber-900 font-bold">آجل: ${formatCurrency(payTotals.deferred)} ر.س</span>
+                </div>
+                <div class="flex items-center gap-2 no-print">
+                  <button type="button" id="export-csv-btn" class="px-3 py-1.5 rounded-lg bg-emerald-900 text-white font-bold flex items-center gap-1.5 hover:bg-emerald-800">
+                    <i data-lucide="download" class="w-3.5 h-3.5"></i>
+                    تصدير إكسل
+                  </button>
+                  <button type="button" id="print-report-btn" class="px-3 py-1.5 rounded-lg bg-stone-100 text-stone-800 font-bold flex items-center gap-1.5 hover:bg-stone-200">
+                    <i data-lucide="printer" class="w-3.5 h-3.5"></i>
+                    طباعة
+                  </button>
+                </div>
+              </section>
+
+              <!-- Filters Bar -->
+              <section class="glass-card rounded-2xl p-4 no-print">
+                <div class="grid ${isForcedMobile ? 'grid-cols-1' : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4'} gap-3">
+                  <input type="text" id="filter-search" class="input-field text-sm py-2.5" placeholder="بحث بالمزرعة، نوع التمر، التاجر، رقم الإيصال..." value="${escapeHtml(state.filters.search)}" />
+                  <select id="filter-marketer" class="input-field text-sm py-2.5">
+                    <option value="all">جميع المسوقين</option>
+                    ${state.db.marketers.map(m => `
+                      <option value="${escapeHtml(m.id)}" ${state.filters.marketerId === m.id ? 'selected' : ''}>${escapeHtml(m.name)} (${escapeHtml(m.empId)})</option>
+                    `).join('')}
+                  </select>
+                  <select id="filter-payment" class="input-field text-sm py-2.5">
+                    <option value="all" ${state.filters.paymentMethod === 'all' ? 'selected' : ''}>جميع طرق الدفع</option>
+                    <option value="cash" ${state.filters.paymentMethod === 'cash' ? 'selected' : ''}>كاش (نقدي)</option>
+                    <option value="network" ${state.filters.paymentMethod === 'network' ? 'selected' : ''}>شبكة (مدى)</option>
+                    <option value="transfer" ${state.filters.paymentMethod === 'transfer' ? 'selected' : ''}>حوالة بنكية</option>
+                    <option value="deferred" ${state.filters.paymentMethod === 'deferred' ? 'selected' : ''}>دفع آجل</option>
+                  </select>
+                  <select id="filter-date" class="input-field text-sm py-2.5">
+                    <option value="all" ${state.filters.dateRange === 'all' ? 'selected' : ''}>كل الأوقات</option>
+                    <option value="today" ${state.filters.dateRange === 'today' ? 'selected' : ''}>اليوم فقط</option>
+                    <option value="week" ${state.filters.dateRange === 'week' ? 'selected' : ''}>آخر 7 أيام</option>
+                  </select>
+                </div>
+              </section>
+
+              <!-- Operations List / Table -->
+              ${filtered.length === 0 ? `
+                <div class="glass-card rounded-2xl p-10 text-center text-stone-500">
+                  <p class="font-bold text-stone-700">لا توجد عمليات مطابقة للبحث الحالي</p>
+                  <p class="text-xs mt-1">جرّب تغيير خيارات التصفية أو تسجيل فاتورة جديدة من حساب مسوق.</p>
+                </div>
+              ` : `
+                <!-- Desktop Table -->
+                <div class="${isForcedMobile ? 'hidden' : isForcedDesktop ? 'block' : 'hidden lg:block'} glass-card rounded-2xl overflow-hidden">
+                  <div class="overflow-x-auto">
+                    <table class="w-full text-right border-collapse">
+                      <thead>
+                        <tr class="bg-stone-100/90 text-stone-600 text-xs font-extrabold border-b border-stone-200">
+                          <th class="py-3.5 px-3">المسوق والتاريخ</th>
+                          <th class="py-3.5 px-3">المزرعة</th>
+                          <th class="py-3.5 px-3">أصناف الفاتورة</th>
+                          <th class="py-3.5 px-3">مجموع الفاتورة</th>
+                          <th class="py-3.5 px-3">الدفع</th>
+                          <th class="py-3.5 px-3">الحالة</th>
+                          <th class="py-3.5 px-3 text-center no-print">المرفقات</th>
+                        </tr>
+                      </thead>
+                      <tbody class="divide-y divide-stone-100 text-sm">
+                        ${filtered.map(s => {
+                          const items = getSaleItems(s);
+                          return `
+                            <tr class="hover:bg-amber-50/40 transition align-top">
+                              <td class="py-3.5 px-3">
+                                <div class="font-bold text-stone-900">${escapeHtml(s.marketerName)}</div>
+                                <div class="text-[11px] text-emerald-800 font-semibold">الرقم الوظيفي: ${escapeHtml(s.marketerEmpId)}</div>
+                                <div class="text-[11px] text-stone-500 mt-0.5">${escapeHtml(formatDateTime(s.createdAt))}</div>
+                              </td>
+                              <td class="py-3.5 px-3">
+                                <div class="font-bold text-stone-800">${escapeHtml(s.farmName)}</div>
+                                <div class="text-xs text-stone-500" dir="ltr">${escapeHtml(s.farmNumber)}</div>
+                              </td>
+                              <td class="py-3.5 px-3 min-w-[210px]">
+                                <div class="space-y-1">
+                                  ${items.map(it => `
+                                    <div class="text-xs bg-stone-50 px-2 py-1 rounded-md border border-stone-100 flex items-center justify-between gap-2">
+                                      <span><strong class="text-stone-900">${escapeHtml(it.dateType)}</strong> (${formatNumber(it.cartons)} × ${formatCurrency(it.unitPrice)})</span>
+                                      <span class="font-bold text-emerald-900">${formatCurrency(it.lineTotal)}</span>
+                                    </div>
+                                  `).join('')}
+                                </div>
+                              </td>
+                              <td class="py-3.5 px-3 whitespace-nowrap">
+                                <div class="font-extrabold text-emerald-900">${formatCurrency(s.total)} ر.س</div>
+                                <div class="text-[11px] text-stone-500 mt-0.5">${formatNumber(getSaleTotalCartons(s))} كرتون (${items.length} ${items.length === 1 ? 'صنف' : 'أصناف'})</div>
+                              </td>
+                              <td class="py-3.5 px-3">
+                                <span class="inline-block px-2.5 py-0.5 rounded-full text-[11px] font-bold border ${getPaymentBadgeClass(s.paymentMethod)}">
+                                  ${escapeHtml(getPaymentLabel(s.paymentMethod))}
+                                </span>
+                                <div class="text-[11px] text-stone-600 mt-1">${escapeHtml(getPaymentDetailText(s))}</div>
+                              </td>
+                              <td class="py-3.5 px-3">
+                                <span class="inline-block px-2.5 py-1 rounded-full text-[11px] font-bold ${s.reviewed ? 'bg-emerald-100 text-emerald-900' : 'bg-amber-100 text-amber-900'}">
+                                  ${s.reviewed ? 'معتمدة ✓' : 'جديدة'}
+                                </span>
+                              </td>
+                              <td class="py-3.5 px-3 text-center no-print">
+                                <button type="button" data-open-sale="${escapeHtml(s.id)}" class="px-3 py-1.5 rounded-lg bg-emerald-50 text-emerald-900 border border-emerald-200 font-bold text-xs hover:bg-emerald-100 inline-flex items-center gap-1">
+                                  <i data-lucide="eye" class="w-3.5 h-3.5"></i>
+                                  عرض (${(s.paymentReceiptImg ? 1 : 0) + (s.manualInvoiceImg ? 1 : 0)})
+                                </button>
+                              </td>
+                            </tr>
+                          `;
+                        }).join('')}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                <!-- Mobile Cards -->
+                <div class="${isForcedMobile ? 'block' : isForcedDesktop ? 'hidden' : 'block lg:hidden'} space-y-3">
+                  ${filtered.map(s => `
+                    <div class="glass-card rounded-2xl p-4 space-y-2.5">
+                      <div class="flex items-start justify-between gap-2">
+                        <div>
+                          <div class="text-sm font-extrabold text-emerald-950">${escapeHtml(s.marketerName)} <span class="text-xs font-semibold text-emerald-700">(${escapeHtml(s.marketerEmpId)})</span></div>
+                          <div class="text-[11px] text-stone-500 mt-0.5">${escapeHtml(formatDateTime(s.createdAt))}</div>
+                        </div>
+                        <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold ${s.reviewed ? 'bg-emerald-100 text-emerald-900' : 'bg-amber-100 text-amber-900'}">
+                          ${s.reviewed ? 'معتمدة ✓' : 'جديدة'}
+                        </span>
+                      </div>
+
+                      <div class="p-2.5 rounded-xl bg-stone-50 border border-stone-100 text-xs space-y-1.5">
+                        <div class="font-bold text-stone-900 pb-1 border-b border-stone-200/70">${escapeHtml(s.farmName)} <span class="font-normal text-stone-500">(${escapeHtml(s.farmNumber)})</span></div>
+                        ${formatItemsCompactHtml(s)}
+                      </div>
+
+                      <div class="flex items-center justify-between gap-2 pt-1">
+                        <div>
+                          <span class="inline-block px-2.5 py-0.5 rounded-full text-[11px] font-bold border ${getPaymentBadgeClass(s.paymentMethod)}">
+                            ${escapeHtml(getPaymentLabel(s.paymentMethod))}
+                          </span>
+                          <div class="text-[11px] text-stone-600 mt-1">${escapeHtml(getPaymentDetailText(s))}</div>
+                        </div>
+                        <div class="text-left">
+                          <div class="text-base font-extrabold text-emerald-900">${formatCurrency(s.total)} ر.س</div>
+                          <button type="button" data-open-sale="${escapeHtml(s.id)}" class="mt-1 text-xs font-bold text-amber-800 hover:underline inline-flex items-center gap-1">
+                            عرض الفاتورة والمرفقات (${(s.paymentReceiptImg ? 1 : 0) + (s.manualInvoiceImg ? 1 : 0)})
+                            <i data-lucide="chevron-left" class="w-3.5 h-3.5"></i>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  `).join('')}
+                </div>
+              `}
+            ` : `
+              <!-- Marketers Management Tab -->
+              <section class="space-y-4">
+                <div class="flex flex-wrap items-center justify-between gap-3">
+                  <div>
+                    <h2 class="text-lg font-extrabold text-stone-900">فريق المسوقين المعتمدين</h2>
+                    <p class="text-xs text-stone-500">كل مسوق يفتح حساباً أو تضيفه هنا يظهر تلقائياً مع إجمالي مبيعاته.</p>
+                  </div>
+                  <button type="button" id="open-add-marketer-btn" class="px-4 py-2.5 rounded-xl btn-primary text-sm font-bold flex items-center gap-1.5">
+                    <i data-lucide="user-plus" class="w-4 h-4"></i>
+                    إضافة مسوق جديد
+                  </button>
+                </div>
+
+                <div class="grid ${isForcedMobile ? 'grid-cols-1' : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'} gap-3.5">
+                  ${state.db.marketers.map(m => {
+                    const mSales = state.db.sales.filter(s => s.marketerId === m.id);
+                    const mRev = mSales.reduce((a, b) => a + (Number(b.total) || 0), 0);
+                    const mCart = mSales.reduce((a, b) => a + getSaleTotalCartons(b), 0);
+                    return `
+                      <div class="glass-card rounded-2xl p-4 space-y-3">
+                        <div class="flex items-start justify-between gap-2">
+                          <div class="flex items-center gap-2.5">
+                            <div class="w-11 h-11 rounded-full bg-emerald-100 text-emerald-900 font-extrabold flex items-center justify-center">
+                              ${escapeHtml(m.name.slice(0, 1))}
+                            </div>
+                            <div>
+                              <div class="font-extrabold text-stone-900 text-sm">${escapeHtml(m.name)}</div>
+                              <div class="text-xs text-emerald-800 font-bold">الرقم الوظيفي: ${escapeHtml(m.empId)}</div>
+                              <div class="text-xs text-stone-500" dir="ltr">${escapeHtml(m.phone)}</div>
+                            </div>
+                          </div>
+                          <span class="px-2 py-0.5 rounded-full text-[11px] font-bold ${m.active ? 'bg-emerald-100 text-emerald-900' : 'bg-stone-200 text-stone-600'}">
+                            ${m.active ? 'نشط' : 'موقوف'}
+                          </span>
+                        </div>
+                        <div class="grid grid-cols-3 gap-2 text-center bg-stone-50 p-2.5 rounded-xl border border-stone-100">
+                          <div>
+                            <div class="text-[11px] text-stone-500">الفواتير</div>
+                            <div class="text-sm font-extrabold text-stone-900">${mSales.length}</div>
+                          </div>
+                          <div>
+                            <div class="text-[11px] text-stone-500">الكراتين</div>
+                            <div class="text-sm font-extrabold text-amber-700">${formatNumber(mCart)}</div>
+                          </div>
+                          <div>
+                            <div class="text-[11px] text-stone-500">الإجمالي</div>
+                            <div class="text-xs font-extrabold text-emerald-900 mt-0.5">${formatNumber(Math.round(mRev))} ر.س</div>
+                          </div>
+                        </div>
+                        <div class="flex items-center justify-between gap-2 pt-1">
+                          <button type="button" data-filter-by-marketer="${escapeHtml(m.id)}" class="text-xs font-bold text-emerald-800 hover:underline">
+                            عرض فواتيره
+                          </button>
+                          <button type="button" data-toggle-marketer="${escapeHtml(m.id)}" class="text-xs font-bold ${m.active ? 'text-red-600' : 'text-emerald-700'} hover:underline">
+                            ${m.active ? 'إيقاف الحساب' : 'تفعيل الحساب'}
+                          </button>
+                        </div>
+                      </div>
+                    `;
+                  }).join('')}
+                </div>
+              </section>
+            `}
+          </main>
+        `;
+      }
+
+      // ============================================
+      // RENDER & EVENT BINDING
+      // ============================================
+
+      function render() {
+        const root = document.getElementById('app');
+        if (!root) return;
+
+        if (!state.user) {
+          root.innerHTML = renderAuthView();
+          bindAuthEvents();
+        } else if (state.user.role === 'marketer') {
+          root.innerHTML = renderMarketerView();
+          bindMarketerEvents();
+        } else {
+          root.innerHTML = renderManagerView();
+          bindManagerEvents();
+        }
+
+        const installBtn = document.getElementById('open-install-btn');
+        if (installBtn) installBtn.addEventListener('click', openInstallModal);
+
+        const logoutBtn = document.getElementById('logout-btn');
+        if (logoutBtn) {
+          logoutBtn.addEventListener('click', () => {
+            state.user = null;
+            render();
+          });
+        }
+
+        if (window.lucide) lucide.createIcons();
+      }
+
+      function bindAuthEvents() {
+        document.querySelectorAll('[data-auth-tab]').forEach(btn => {
+          btn.addEventListener('click', () => {
+            state.authTab = btn.getAttribute('data-auth-tab');
+            render();
+          });
+        });
+
+        document.querySelectorAll('[data-quick-marketer]').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const id = btn.getAttribute('data-quick-marketer');
+            const mk = state.db.marketers.find(m => m.id === id);
+            if (mk) {
+              state.user = { role: 'marketer', ...mk };
+              state.marketerTab = 'new-sale';
+              showToast(`أهلاً بك يا ${mk.name}`);
+              render();
+            }
+          });
+        });
+
+        const mkLoginForm = document.getElementById('marketer-login-form');
+        if (mkLoginForm) {
+          mkLoginForm.addEventListener('submit', e => {
+            e.preventDefault();
+            const empId = document.getElementById('login-empid').value.trim().toLowerCase();
+            const pin = document.getElementById('login-pin').value.trim();
+            const mk = state.db.marketers.find(m => m.empId.toLowerCase() === empId && m.pin === pin);
+            if (!mk) {
+              showToast('الرقم الوظيفي أو رمز الدخول غير صحيح.', 'error');
+              return;
+            }
+            if (!mk.active) {
+              showToast('هذا الحساب موقوف حالياً، يرجى مراجعة المدير.', 'error');
+              return;
+            }
+            state.user = { role: 'marketer', ...mk };
+            state.marketerTab = 'new-sale';
+            showToast(`أهلاً بك يا ${mk.name}`);
+            render();
+          });
+        }
+
+        const mkRegForm = document.getElementById('marketer-register-form');
+        if (mkRegForm) {
+          mkRegForm.addEventListener('submit', e => {
+            e.preventDefault();
+            const name = document.getElementById('reg-name').value.trim();
+            const empId = document.getElementById('reg-empid').value.trim();
+            const pin = document.getElementById('reg-pin').value.trim();
+            const phone = document.getElementById('reg-phone').value.trim();
+            if (!name || !empId || !pin || !phone) {
+              showToast('يرجى تعبئة جميع الحقول المطلوبة.', 'error');
+              return;
+            }
+            if (state.db.marketers.some(m => m.empId.toLowerCase() === empId.toLowerCase())) {
+              showToast('هذا الرقم الوظيفي مسجل مسبقاً، يمكنك تسجيل الدخول مباشرة.', 'error');
+              return;
+            }
+            const newMk = {
+              id: 'mk_' + Date.now(),
+              name,
+              empId,
+              phone,
+              pin,
+              active: true
+            };
+            state.db.marketers.push(newMk);
+            saveDB(state.db);
+            state.user = { role: 'marketer', ...newMk };
+            state.marketerTab = 'new-sale';
+            showToast('تم فتح حسابك بنجاح ويمكنك الآن رفع الفواتير.');
+            render();
+          });
+        }
+
+        const mgrLoginForm = document.getElementById('manager-login-form');
+        if (mgrLoginForm) {
+          mgrLoginForm.addEventListener('submit', e => {
+            e.preventDefault();
+            const pin = document.getElementById('manager-pin').value.trim();
+            if (pin !== MANAGER_PIN) {
+              showToast('رمز دخول المدير غير صحيح (الافتراضي 1234).', 'error');
+              return;
+            }
+            state.user = { role: 'manager', name: 'المدير العام' };
+            state.managerTab = 'sales';
+            showToast('تم الدخول إلى لوحة تحكم المدير.');
+            render();
+          });
+        }
+      }
+
+      function updateLiveInvoiceTotalsDOM(changedUid) {
+        if (changedUid) {
+          const item = state.form.items.find(it => it.uid === changedUid);
+          if (item) {
+            const lineTotal = (Number(item.cartons) || 0) * (Number(item.unitPrice) || 0);
+            const lineEl = document.querySelector(`[data-item-total-display="${CSS.escape(changedUid)}"]`);
+            if (lineEl) lineEl.textContent = `${formatCurrency(lineTotal)} ريال`;
+          }
+        }
+        const { totalCartons, grandTotal } = computeFormTotals();
+        const totalEl = document.getElementById('live-invoice-total');
+        const summaryEl = document.getElementById('live-invoice-summary');
+        const count = state.form.items.length;
+        if (totalEl) totalEl.textContent = formatCurrency(grandTotal);
+        if (summaryEl) summaryEl.textContent = `${count} ${count === 1 ? 'صنف' : 'أصناف'} • إجمالي الكراتين: ${formatNumber(totalCartons)} كرتون`;
+      }
+
+      function bindMarketerEvents() {
+        const switchMgr = document.getElementById('switch-to-manager-btn');
+        if (switchMgr) {
+          switchMgr.addEventListener('click', () => {
+            state.user = { role: 'manager', name: 'المدير العام' };
+            state.managerTab = 'sales';
+            showToast('تم الانتقال لمعاينة لوحة تحكم المدير.', 'info');
+            render();
+          });
+        }
+
+        document.querySelectorAll('[data-mk-tab]').forEach(btn => {
+          btn.addEventListener('click', () => {
+            state.marketerTab = btn.getAttribute('data-mk-tab');
+            render();
+          });
+        });
+
+        document.querySelectorAll('[data-open-sale]').forEach(btn => {
+          btn.addEventListener('click', () => openSaleDetailModal(btn.getAttribute('data-open-sale')));
+        });
+
+        // General form inputs
+        const bindInput = (id, key) => {
+          const el = document.getElementById(id);
+          if (!el) return;
+          el.addEventListener('input', () => {
+            state.form[key] = el.value;
+          });
+        };
+
+        bindInput('f-farm-name', 'farmName');
+        bindInput('f-farm-number', 'farmNumber');
+        bindInput('f-pos-receipt', 'posReceiptNumber');
+        bindInput('f-transfer-ref', 'transferRef');
+        bindInput('f-merchant-name', 'merchantName');
+        bindInput('f-notes', 'notes');
+
+        // Per-item date type buttons
+        document.querySelectorAll('[data-item-date-type]').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const uid = btn.getAttribute('data-item-uid');
+            const dt = btn.getAttribute('data-item-date-type');
+            const item = state.form.items.find(it => it.uid === uid);
+            if (item) {
+              item.dateType = dt;
+              render();
+            }
+          });
+        });
+
+        // Per-item field inputs (cartons, unitPrice, customDateType)
+        document.querySelectorAll('[data-item-field]').forEach(el => {
+          el.addEventListener('input', () => {
+            const uid = el.getAttribute('data-item-uid');
+            const field = el.getAttribute('data-item-field');
+            const item = state.form.items.find(it => it.uid === uid);
+            if (item) {
+              item[field] = el.value;
+              if (field === 'cartons' || field === 'unitPrice') {
+                updateLiveInvoiceTotalsDOM(uid);
+              }
+            }
+          });
+        });
+
+        // Add new item row
+        const addItemBtn = document.getElementById('add-item-btn');
+        if (addItemBtn) {
+          addItemBtn.addEventListener('click', () => {
+            const nextDefault = state.form.items.length === 1 ? 'خلاص' : 'صقعي';
+            state.form.items.push(createEmptyItem(nextDefault));
+            render();
+          });
+        }
+
+        // Remove item row
+        document.querySelectorAll('[data-remove-item]').forEach(btn => {
+          btn.addEventListener('click', () => {
+            if (state.form.items.length <= 1) return;
+            const uid = btn.getAttribute('data-remove-item');
+            state.form.items = state.form.items.filter(it => it.uid !== uid);
+            render();
+          });
+        });
+
+        // Payment method switcher
+        document.querySelectorAll('[data-pay-method]').forEach(btn => {
+          btn.addEventListener('click', () => {
+            state.form.paymentMethod = btn.getAttribute('data-pay-method');
+            render();
+          });
+        });
+
+        const payUpload = document.getElementById('upload-payment-receipt');
+        if (payUpload) {
+          payUpload.addEventListener('change', e => {
+            const file = e.target.files && e.target.files[0];
+            if (file) {
+              compressImageFile(file, dataUrl => {
+                state.form.paymentReceiptImg = dataUrl;
+                showToast('تم إرفاق صورة إيصال الدفع.');
+                render();
+              });
+            }
+          });
+        }
+
+        const invUpload = document.getElementById('upload-manual-invoice');
+        if (invUpload) {
+          invUpload.addEventListener('change', e => {
+            const file = e.target.files && e.target.files[0];
+            if (file) {
+              compressImageFile(file, dataUrl => {
+                state.form.manualInvoiceImg = dataUrl;
+                showToast('تم إرفاق صورة الفاتورة اليدوية.');
+                render();
+              });
+            }
+          });
+        }
+
+        document.querySelectorAll('[data-clear-img]').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const key = btn.getAttribute('data-clear-img');
+            state.form[key] = '';
+            render();
+          });
+        });
+
+        const saleForm = document.getElementById('sale-submit-form');
+        if (saleForm) {
+          saleForm.addEventListener('submit', e => {
+            e.preventDefault();
+            const f = state.form;
+
+            if (!f.farmName.trim() || !f.farmNumber.trim()) {
+              showToast('يرجى إدخال اسم المزرعة ورقمها.', 'error');
+              return;
+            }
+
+            const validatedItems = [];
+            for (let i = 0; i < f.items.length; i++) {
+              const it = f.items[i];
+              const finalDateType = it.dateType === 'أخرى' ? it.customDateType.trim() : it.dateType;
+              const cartons = Number(it.cartons);
+              const unitPrice = Number(it.unitPrice);
+
+              if (!finalDateType) {
+                showToast(`يرجى تحديد نوع التمر في الصنف رقم ${i + 1}.`, 'error');
+                return;
+              }
+              if (!(cartons > 0) || !(unitPrice > 0)) {
+                showToast(`يرجى إدخال عدد الكراتين والسعر الإفرادي بشكل صحيح في الصنف رقم ${i + 1}.`, 'error');
+                return;
+              }
+              validatedItems.push({
+                dateType: finalDateType,
+                cartons: cartons,
+                unitPrice: unitPrice,
+                lineTotal: Number((cartons * unitPrice).toFixed(2))
+              });
+            }
+
+            if (f.paymentMethod === 'network' && !f.posReceiptNumber.trim()) {
+              showToast('يرجى إدخال رقم إيصال الشبكة.', 'error');
+              return;
+            }
+            if (f.paymentMethod === 'deferred' && !f.merchantName.trim()) {
+              showToast('يرجى إدخال اسم التاجر لعملية الدفع الآجل.', 'error');
+              return;
+            }
+
+            const totalCartons = validatedItems.reduce((sum, it) => sum + it.cartons, 0);
+            const grandTotal = Number(validatedItems.reduce((sum, it) => sum + it.lineTotal, 0).toFixed(2));
+            const nextNum = 1001 + state.db.sales.length;
+
+            const newSale = {
+              id: 'INV-' + nextNum,
+              marketerId: state.user.id,
+              marketerName: state.user.name,
+              marketerEmpId: state.user.empId,
+              farmName: f.farmName.trim(),
+              farmNumber: f.farmNumber.trim(),
+              items: validatedItems,
+              cartons: totalCartons,
+              total: grandTotal,
+              paymentMethod: f.paymentMethod,
+              posReceiptNumber: f.paymentMethod === 'network' ? f.posReceiptNumber.trim() : '',
+              transferRef: f.paymentMethod === 'transfer' ? f.transferRef.trim() : '',
+              merchantName: f.paymentMethod === 'deferred' ? f.merchantName.trim() : '',
+              notes: f.notes.trim(),
+              paymentReceiptImg: f.paymentReceiptImg,
+              manualInvoiceImg: f.manualInvoiceImg,
+              createdAt: new Date().toISOString(),
+              reviewed: false
+            };
+
+            state.db.sales.unshift(newSale);
+            saveDB(state.db);
+
+            state.form = createFreshForm();
+            state.marketerTab = 'my-sales';
+            showToast(`تم رفع الفاتورة #${newSale.id} (${validatedItems.length} أصناف) وإرسالها للمدير فوراً!`);
+            render();
+          });
+        }
+      }
+
+      function bindManagerEvents() {
+        document.querySelectorAll('[data-view-mode]').forEach(btn => {
+          btn.addEventListener('click', () => {
+            state.managerViewMode = btn.getAttribute('data-view-mode');
+            render();
+          });
+        });
+
+        document.querySelectorAll('[data-mgr-tab]').forEach(btn => {
+          btn.addEventListener('click', () => {
+            state.managerTab = btn.getAttribute('data-mgr-tab');
+            render();
+          });
+        });
+
+        const searchEl = document.getElementById('filter-search');
+        if (searchEl) {
+          searchEl.addEventListener('input', () => {
+            state.filters.search = searchEl.value;
+            const pos = searchEl.selectionStart;
+            render();
+            const restored = document.getElementById('filter-search');
+            if (restored) {
+              restored.focus();
+              try { restored.setSelectionRange(pos, pos); } catch (e) {}
+            }
+          });
+        }
+
+        const mkFilter = document.getElementById('filter-marketer');
+        if (mkFilter) {
+          mkFilter.addEventListener('change', () => {
+            state.filters.marketerId = mkFilter.value;
+            render();
+          });
+        }
+
+        const payFilter = document.getElementById('filter-payment');
+        if (payFilter) {
+          payFilter.addEventListener('change', () => {
+            state.filters.paymentMethod = payFilter.value;
+            render();
+          });
+        }
+
+        const dateFilter = document.getElementById('filter-date');
+        if (dateFilter) {
+          dateFilter.addEventListener('change', () => {
+            state.filters.dateRange = dateFilter.value;
+            render();
+          });
+        }
+
+        document.querySelectorAll('[data-open-sale]').forEach(btn => {
+          btn.addEventListener('click', () => openSaleDetailModal(btn.getAttribute('data-open-sale')));
+        });
+
+        const exportBtn = document.getElementById('export-csv-btn');
+        if (exportBtn) {
+          exportBtn.addEventListener('click', () => exportCSV(getFilteredSales()));
+        }
+
+        const printBtn = document.getElementById('print-report-btn');
+        if (printBtn) {
+          printBtn.addEventListener('click', () => window.print());
+        }
+
+        const openAddMkBtn = document.getElementById('open-add-marketer-btn');
+        if (openAddMkBtn) {
+          openAddMkBtn.addEventListener('click', openAddMarketerModal);
+        }
+
+        document.querySelectorAll('[data-filter-by-marketer]').forEach(btn => {
+          btn.addEventListener('click', () => {
+            state.filters.marketerId = btn.getAttribute('data-filter-by-marketer');
+            state.managerTab = 'sales';
+            render();
+          });
+        });
+
+        document.querySelectorAll('[data-toggle-marketer]').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const id = btn.getAttribute('data-toggle-marketer');
+            const mk = state.db.marketers.find(m => m.id === id);
+            if (mk) {
+              mk.active = !mk.active;
+              saveDB(state.db);
+              showToast(mk.active ? `تم تفعيل حساب ${mk.name}` : `تم إيقاف حساب ${mk.name}`, 'info');
+              render();
+            }
+          });
+        });
+      }
+
+      // Global static modal listeners
+      document.getElementById('close-install-modal').addEventListener('click', closeInstallModal);
+      document.getElementById('install-modal').addEventListener('click', e => {
+        if (e.target.id === 'install-modal') closeInstallModal();
+      });
+
+      document.getElementById('trigger-native-install').addEventListener('click', async () => {
+        if (!state.deferredPrompt) return;
+        state.deferredPrompt.prompt();
+        try {
+          await state.deferredPrompt.userChoice;
+        } catch (e) {}
+        state.deferredPrompt = null;
+        closeInstallModal();
+      });
+
+      document.getElementById('copy-app-link-btn').addEventListener('click', () => {
+        copyToClipboard(window.location.href);
+      });
+
+      document.getElementById('close-sale-modal').addEventListener('click', closeSaleDetailModal);
+      document.getElementById('sale-detail-modal').addEventListener('click', e => {
+        if (e.target.id === 'sale-detail-modal') closeSaleDetailModal();
+      });
+
+      document.getElementById('close-zoom-modal').addEventListener('click', closeZoomModal);
+      document.getElementById('zoom-modal').addEventListener('click', e => {
+        if (e.target.id === 'zoom-modal') closeZoomModal();
+      });
+
+      document.getElementById('close-marketer-modal').addEventListener('click', closeAddMarketerModal);
+      document.getElementById('cancel-marketer-modal').addEventListener('click', closeAddMarketerModal);
+      document.getElementById('add-marketer-modal').addEventListener('click', e => {
+        if (e.target.id === 'add-marketer-modal') closeAddMarketerModal();
+      });
+
+      document.getElementById('manager-add-marketer-form').addEventListener('submit', e => {
+        e.preventDefault();
+        const name = document.getElementById('mgr-m-name').value.trim();
+        const empId = document.getElementById('mgr-m-empid').value.trim();
+        const pin = document.getElementById('mgr-m-pin').value.trim();
+        const phone = document.getElementById('mgr-m-phone').value.trim();
+        if (!name || !empId || !pin || !phone) {
+          showToast('يرجى تعبئة جميع الحقول.', 'error');
+          return;
+        }
+        if (state.db.marketers.some(m => m.empId.toLowerCase() === empId.toLowerCase())) {
+          showToast('الرقم الوظيفي مستخدم مسبقاً.', 'error');
+          return;
+        }
+        state.db.marketers.push({
+          id: 'mk_' + Date.now(),
+          name,
+          empId,
+          phone,
+          pin,
+          active: true
+        });
+        saveDB(state.db);
+        e.target.reset();
+        document.getElementById('mgr-m-pin').value = '1234';
+        closeAddMarketerModal();
+        showToast(`تمت إضافة المسوق ${name} بنجاح.`);
+        render();
+      });
+
+      // Boot
+      setupPWA();
+      render();
+    })();
+  </script>
+</body>
+</html>
